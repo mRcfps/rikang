@@ -46,7 +46,7 @@ class Hospital(models.Model):
     location = models.CharField(max_length=100, blank=True, verbose_name='地址')
     doctor_num = models.IntegerField(verbose_name='医生人数')
     rank = models.CharField(choices=RANK_CHOICES, max_length=10, verbose_name='医院等级')
-    phone = models.PhoneNumberField(verbose_name='电话')
+    phone = models.IntegerField(verbose_name='电话')
     description = models.TextField(verbose_name='医院介绍', blank=True)
     photo = models.ImageField(upload_to='hospitals/', blank=True, verbose_name='图片')
 
