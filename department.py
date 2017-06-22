@@ -198,7 +198,7 @@ DEPARTMENT_CHOICES = (
             (ECG, '心电图科'),
             (ULTRASONOGRAPHY, '超声科'),
             (ANESTHESIOLOGY, '麻醉科'),
-            (MEDICAL_EXAMINATION, '体检中心),
+            (MEDICAL_EXAMINATION, '体检中心'),
             (PREVENTIVE_HEALTH_CARE, '预防保健科'),
         )
     ),
