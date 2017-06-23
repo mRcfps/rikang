@@ -27,7 +27,7 @@ class Doctor(UserIdentity):
         (RESIDENT, '住院医师'),
         (ATTENDING, '主治医师'),
         (DEPUTY_CHIEF, '副主任医师'),
-        (CHIEF, '主治医师'),
+        (CHIEF, '主任医师'),
     )
 
     hospital = models.ForeignKey(Hospital,
