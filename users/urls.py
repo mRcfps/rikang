@@ -21,7 +21,7 @@ urlpatterns = [
     url(
         r'^doctor-profile/$',
         views.DoctorProfileView.as_view(),
-        name='patient-init'
+        name='doctor-profile'
     ),
     url(
         r'^info/$',
