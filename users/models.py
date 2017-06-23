@@ -5,17 +5,7 @@ import departments
 from home.models import Hospital
 
 
-class UserIdentity(models.Model):
-
-    user = models.OneToOneField(User, verbose_name='手机号')
-    name = models.CharField(max_length=50, verbose_name='姓名')
-    avatar = models.ImageField(upload_to='avatars/',
-                               blank=True,
-                               verbose_name='头像')
-    created = models.DateTimeField(auto_now_add=True, verbose_name='注册时间')
-
-
-class Doctor(UserIdentity):
+class Doctor(models.Model):
 
     # Titles of doctors
     RESIDENT = 'R'
@@ -30,6 +20,9 @@ class Doctor(UserIdentity):
         (CHIEF, '主任医师'),
     )
 
+    user = models.OneToOneField(User, verbose_name='手机号')
+    name = models.CharField(max_length=50, verbose_name='姓名')
+    avatar = models.ImageField(upload_to='avatars/', blank=True, verbose_name='头像')
     hospital = models.ForeignKey(Hospital,
                                  related_name='doctors',
                                  verbose_name='所属医院')
@@ -40,6 +33,7 @@ class Doctor(UserIdentity):
     title = models.CharField(choices=TITLE_CHOICES, max_length=1, verbose_name='职称')
     ratings = models.PositiveIntegerField(default=5, verbose_name='评分')
     patient_num = models.PositiveIntegerField(default=0, verbose_name='已帮助患者')
+    created = models.DateTimeField(auto_now_add=True, verbose_name='注册时间')
 
     class Meta:
         verbose_name = '医生'
@@ -58,9 +52,13 @@ class Information(models.Model):
     motto = models.TextField(blank=True, verbose_name='医生寄语')
 
 
-class Patient(UserIdentity):
+class Patient(models.Model):
 
+    user = models.OneToOneField(User, verbose_name='手机号')
+    name = models.CharField(blank=True, max_length=50, verbose_name='姓名')
+    avatar = models.ImageField(upload_to='avatars/', blank=True, verbose_name='头像')
     favorite_doctors = models.ManyToManyField(Doctor, blank=True)
+    created = models.DateTimeField(auto_now_add=True, verbose_name='注册时间')
 
     class Meta:
         verbose_name = '患者'
