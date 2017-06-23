@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import generics, parsers, status
 
-from users.models import Information
+from users.models import Doctor, Patient, Information
 from users.serializers import (UserSerializer,
                                DoctorSerializer,
                                PatientSerializer,
@@ -37,6 +37,7 @@ class UserRegistrationView(generics.CreateAPIView):
 
 class DoctorInitView(generics.CreateAPIView):
 
+    queryset = Doctor.objects.all()
     authentication_classes = (TokenAuthentication,)
     serializer_class = DoctorSerializer
 
@@ -47,20 +48,23 @@ class DoctorInitView(generics.CreateAPIView):
         Information.objects.create(doctor=self.request.user)
 
 
-class DoctorProfileView(generics.RetrieveAPIView):
+class DoctorProfileView(generics.RetrieveUpdateAPIView):
 
+    queryset = Doctor.objects.all()
     authentication_classes = (TokenAuthentication,)
     serializer_class = DoctorSerializer
 
 
 class DoctorInfoView(generics.RetrieveUpdateAPIView):
 
+    queryset = Doctor.objects.all()
     authentication_classes = (TokenAuthentication,)
     serializer_class = InformationSerializer
 
 
-class PatientProfileView(generics.RetrieveAPIView):
+class PatientProfileView(generics.RetrieveUpdateAPIView):
 
+    queryset = Patient.objects.all()
     authentication_classes = (TokenAuthentication,)
     serializer_class = PatientSerializer
 
