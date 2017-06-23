@@ -4,16 +4,16 @@ from .models import Doctor, Patient
 
 
 class DoctorAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'hospital', 'category', 'ratings')
-    list_filter = ('hospital', 'category', 'ratings')
+
+    list_display = ('id', 'department', 'name', 'hospital',
+                    'title', 'ratings', 'patient_num', 'created')
+    list_filter = ('department', 'hospital', 'title', 'ratings')
     search_fields = ('name',)
 
 
 class PatientAdmin(admin.ModelAdmin):
-    '''
-        Admin View for Patient
-    '''
-    list_display = ('id', 'name')
+
+    list_display = ('id', 'name', 'created')
 
 admin.site.register(Doctor, DoctorAdmin)
 admin.site.register(Patient, PatientAdmin)
