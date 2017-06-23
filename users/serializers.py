@@ -34,7 +34,7 @@ class PatientSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Patient
-        fields = ('id', 'doctor', 'name', 'avatar')
+        fields = ('id', 'name', 'avatar')
 
 
 class InformationSerializer(serializers.ModelSerializer):
