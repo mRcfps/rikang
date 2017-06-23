@@ -44,6 +44,7 @@ INSTALLED_APPS = [
 
     # rikang apps
     'home',
+    'users',
 ]
 
 MIDDLEWARE = [
