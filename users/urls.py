@@ -4,7 +4,7 @@ from users import views
 
 urlpatterns = [
     url(
-        r'^register/$',
+        r'^register$',
         views.UserRegistrationView.as_view(),
         name='register'
     ),
@@ -14,7 +14,7 @@ urlpatterns = [
         name='login'
     ),
     url(
-        r'^doctor-init/$',
+        r'^doctor-init$',
         views.DoctorInitView.as_view(),
         name='doctor-init'
     ),
