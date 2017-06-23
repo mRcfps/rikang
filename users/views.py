@@ -50,9 +50,11 @@ class DoctorInitView(generics.CreateAPIView):
 
 class DoctorProfileView(generics.RetrieveUpdateAPIView):
 
-    queryset = Doctor.objects.all()
     authentication_classes = (TokenAuthentication,)
     serializer_class = DoctorSerializer
+
+    def get_object(self):
+        return Doctor.objects.get(user=self.request.user)
 
 
 class DoctorInfoView(generics.RetrieveUpdateAPIView):
@@ -64,9 +66,9 @@ class DoctorInfoView(generics.RetrieveUpdateAPIView):
 
 class PatientProfileView(generics.RetrieveUpdateAPIView):
 
-    queryset = Patient.objects.all()
     authentication_classes = (TokenAuthentication,)
     serializer_class = PatientSerializer
 
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+    def get_object(self):
+        profile = Patient.objects.get_or_create(user=self.request.user)
+        return profile
