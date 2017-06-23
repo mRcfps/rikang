@@ -19,7 +19,7 @@ urlpatterns = [
         name='hospital-list'
     ),
     url(
-        r'^hospitals/$',
+        r'^hospitals/(?P<pk>\d+)/$',
         views.HospitalDetailView.as_view(),
         name='hospital-detail'
     ),
