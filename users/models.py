@@ -42,6 +42,9 @@ class Doctor(models.Model):
     def __str__(self):
         return self.name
 
+    def hospital_name(self):
+        return self.hospital.name
+
 
 class Information(models.Model):
 
