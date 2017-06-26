@@ -1,9 +1,11 @@
 from django.urls import reverse
+from django.contrib.auth.models import User
 
 from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
 
 from home.models import Post, Hospital
+from users.models import Doctor, Information
 
 # Number of news for test
 # Should be larger than PAGE_SIZE
@@ -11,7 +13,11 @@ TEST_POST_NUM = 20
 
 # Number of hospitals for test
 # Should be larger than PAGE_SIZE
-TEST_HOSPITAL_NUM = 20
+TEST_HOSPITAL_NUM = 30
+
+# Number of doctors for test
+# Should be larger than PAGE_SIZE
+TEST_DOCTOR_NUM = 40
 
 
 class PostTests(APITestCase):
@@ -75,3 +81,59 @@ class HospitalTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['id'], self.test_hospital.id)
+
+
+class DoctorTests(APITestCase):
+    """Test suite for the doctor model in home app."""
+
+    def setUp(self):
+        """Initialize several doctors to play with."""
+        # A hospital is needed to be referenced as FK
+        hospital = Hospital.objects.create(
+            name='test',
+            location='test',
+            rank='3A',
+            phone=123456,
+            description='test'
+        )
+
+        for index in range(TEST_DOCTOR_NUM):
+            user = User.objects.create_user(username=str(index), password='test')
+            doctor = Doctor.objects.create(
+                user=user,
+                name='doctor {}'.format(index),
+                department='NEO',
+                years=20,
+                title='C',
+                hospital=hospital
+            )
+            Information.objects.create(doctor=doctor)
+
+        self.client = APIClient()
+        self.test_doctor = Doctor.objects.first()
+
+    def test_get_doctor_list(self):
+        """Ensure we can get a list of doctors."""
+        url = reverse('home:doctor-list')
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], TEST_DOCTOR_NUM)
+
+        # Test if pagination works
+        self.assertNotEqual(response.data['next'], None)
+
+    def test_get_doctor_by_id(self):
+        """Ensure we can get one single doctor by id."""
+        url = reverse('home:doctor-detail', args=[self.test_doctor.id])
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['id'], self.test_doctor.id)
+
+    def test_get_doctor_info(self):
+        """Ensure we can get a doctor's info by id."""
+        url = reverse('home:doctor-info', args=[self.test_doctor.id])
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
