@@ -10,4 +10,4 @@ class QuestionAdmin(admin.ModelAdmin):
     list_filter = ('department', 'solved', 'stars', 'created')
     search_fields = ('title', 'department')
 
-admin.site.register(Answer, AnswerAdmin)
+admin.site.register(Question, QuestionAdmin)
