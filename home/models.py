@@ -55,3 +55,6 @@ class Hospital(models.Model):
 
     def __str__(self):
         return self.name
+
+    def doctor_num(self):
+        return self.doctors.count()

@@ -21,13 +21,11 @@ class HospitalListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Hospital
-        fields = ('id', 'name', 'location', 'photo',
-                  'doctor_num', 'rank')
+        fields = ('id', 'name', 'location', 'photo', 'doctor_num', 'rank')
 
 
 class HospitalDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Hospital
-        fields = ('id', 'name', 'location', 'photo',
-                  'description', 'rank')
+        fields = ('id', 'name', 'location', 'photo', 'doctor_num', 'description', 'rank')
