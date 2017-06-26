@@ -14,6 +14,11 @@ urlpatterns = [
         name='login'
     ),
     url(
+        r'change-password/$',
+        views.UserChangePasswordView.as_view(),
+        name='change-password'
+    ),
+    url(
         r'^doctor-init$',
         views.DoctorInitView.as_view(),
         name='doctor-init'

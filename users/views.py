@@ -35,6 +35,16 @@ class UserRegistrationView(generics.CreateAPIView):
     serializer_class = UserSerializer
 
 
+class UserChangePasswordView(generics.UpdateAPIView):
+    """Allow users to change their password with token auth."""
+
+    serializer_class = UserSerializer
+    authentication_classes = (TokenAuthentication,)
+
+    def get_object(self):
+        return User.objects.get(id=self.request.user.id)
+
+
 class DoctorInitView(generics.CreateAPIView):
 
     queryset = Doctor.objects.all()
