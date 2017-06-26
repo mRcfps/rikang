@@ -1,7 +1,7 @@
 from rest_framework import generics
 
-from users.models import Doctor
-from users.serializers import DoctorSerializer
+from users.models import Doctor, Information
+from users.serializers import DoctorSerializer, InformationSerializer
 from home.models import Post, Hospital
 from home.serializers import (PostListSerializer,
                               PostDetailSerializer,
@@ -49,3 +49,10 @@ class DoctorDetailView(generics.RetrieveAPIView):
 
     queryset = Doctor.objects.all()
     serializer_class = DoctorSerializer
+
+
+class DoctorInfoView(generics.RetrieveAPIView):
+    """GET a doctor's information."""
+
+    queryset = Information.objects.all()
+    serializer_class = InformationSerializer

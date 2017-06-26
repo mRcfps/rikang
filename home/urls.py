@@ -33,4 +33,9 @@ urlpatterns = [
         views.DoctorDetailView.as_view(),
         name='doctor-detail'
     ),
+    url(
+        r'doctors/(?P<pk>\d+)/info/$',
+        views.DoctorInfoView.as_view(),
+        name='doctor-info'
+    ),
 ]
