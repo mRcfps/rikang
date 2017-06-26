@@ -20,7 +20,7 @@ urlpatterns = [
     ),
     url(
         r'answers/(?P<pk>\d+)/$',
-        views.AnswersUpdateView.as_view(),
-        name='answer-update'
+        views.AnswersDetailView.as_view(),
+        name='answer-detail'
     ),
 ]
