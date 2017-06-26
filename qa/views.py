@@ -24,7 +24,7 @@ class AnswersListView(generics.ListCreateAPIView):
         return Answer.objects.filter(question__id=self.kwargs['pk'])
 
 
-class AnswersUpdateView(generics.UpdateAPIView):
+class AnswersDetailView(generics.RetrieveUpdateAPIView):
 
     queryset = Answer.objects.all()
     serializer_class = AnswerSerializer
