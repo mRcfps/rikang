@@ -23,4 +23,9 @@ urlpatterns = [
         views.AnswersDetailView.as_view(),
         name='answer-detail'
     ),
+    url(
+        r'answers/(?P<pk>\d+)/upvote$',
+        views.AnswerUpvoteView.as_view(),
+        name='answer-upvote'
+    ),
 ]
