@@ -1,6 +1,9 @@
 from rest_framework import generics
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.authentication import TokenAuthentication
 
-from users.models import Doctor, Information
+from users.models import Doctor, Information, Patient
 from users.serializers import DoctorSerializer, InformationSerializer
 from home.models import Post, Hospital
 from home.serializers import (PostListSerializer,
@@ -56,3 +59,18 @@ class DoctorInfoView(generics.RetrieveAPIView):
 
     queryset = Information.objects.all()
     serializer_class = InformationSerializer
+
+
+class DoctorFavView(APIView):
+    """GET this endpoint and the user will have desired doctor added
+    to his/her favorite_doctors."""
+
+    authentication_classes = (TokenAuthentication,)
+
+    def get(self, request, doctor_id):
+        patient = Patient.objects.get(user=request.user)
+        doctor = Doctor.objects.get(id=doctor_id)
+        patient.favorite_doctors.add(doctor)
+        patient.save()
+
+        return Response({'success': True})
