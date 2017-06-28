@@ -19,6 +19,11 @@ urlpatterns = [
         name='question-detail'
     ),
     url(
+        r'^questions/(?P<pk>\d+)/star$',
+        views.QuestionStarView.as_view(),
+        name='star-question'
+    ),
+    url(
         r'questions/(?P<pk>\d+)/answers/$',
         views.AnswersListView.as_view(),
         name='answer-list'

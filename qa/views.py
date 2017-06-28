@@ -1,9 +1,11 @@
 from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.authentication import TokenAuthentication
 
-from .models import Question, Answer
-from .serializers import QuestionSerializer, AnswerSerializer
+from qa.models import Question, Answer
+from qa.serializers import QuestionSerializer, AnswerSerializer
+from users.models import Patient
 
 
 class QuestionListView(generics.ListCreateAPIView):
@@ -16,6 +18,22 @@ class QuestionDetailView(generics.RetrieveUpdateAPIView):
 
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer
+
+
+class QuestionStarView(APIView):
+
+    authentication_classes = (TokenAuthentication,)
+
+    def get(self, request, *args, **kwargs):
+        question = Question.objects.get(id=self.kwargs['pk'])
+        question.stars += 1
+        question.save()
+
+        patient = Patient.objects.get(user=request.user)
+        patient.starred_questions.add(question)
+        patient.save()
+
+        return Response({'starred': True})
 
 
 class AnswersListView(generics.ListCreateAPIView):
