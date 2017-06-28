@@ -14,7 +14,7 @@ urlpatterns = [
         name='login'
     ),
     url(
-        r'change-password/$',
+        r'change-password$',
         views.UserChangePasswordView.as_view(),
         name='change-password'
     ),
@@ -29,7 +29,7 @@ urlpatterns = [
         name='doctor-profile'
     ),
     url(
-        r'^info/$',
+        r'^doctor-info/$',
         views.DoctorInfoView.as_view(),
         name='doctor-info'
     ),
