@@ -24,7 +24,7 @@ class QuestionTests(APITestCase):
             Question.objects.create(
                 title='test',
                 department='NEO',
-                patient=self.patient,
+                questioner=self.patient,
                 body='text'
             )
 
@@ -54,7 +54,12 @@ class QuestionTests(APITestCase):
     def test_create_new_question(self):
         """Ensure we can create a new question."""
         url = reverse('qa:new-question')
-        data = {'title': 'new question', 'department': 'PNE', 'body': 'new'}
+        data = {
+            'title': 'new question',
+            'department': 'PNE',
+            'body': 'new',
+            'questioner': self.patient.id,
+        }
         response = self.client.post(url, data, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -66,13 +71,13 @@ class QuestionTests(APITestCase):
         new_data = {
             'title': 'new question',
             'department': 'NEO',
-            'patient': self.patient.id,
+            'questioner': self.patient.id,
             'body': 'new question body',
         }
         response = self.client.put(url, new_data, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(Question.object.first().title, new_data['title'])
+        self.assertEqual(Question.objects.first().title, new_data['title'])
 
     def test_star_question(self):
         """Ensure we can star a question."""
@@ -80,5 +85,5 @@ class QuestionTests(APITestCase):
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertNotEqual(self.test_question.stars, 0)
+        self.assertNotEqual(Question.objects.first().stars, 0)
         self.assertNotEqual(self.patient.starred_questions.count(), 0)
