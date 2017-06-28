@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
 from rest_framework.authtoken.models import Token
 
-from users.models import Doctor, Patient
+from users.models import Doctor, Patient, Information
 from home.models import Hospital
 
 
@@ -71,18 +71,6 @@ class DoctorTests(APITestCase):
     def setUp(self):
         """Initialize a doctor to play with."""
         self.user = User.objects.create_user(username='doctor', password='doctor')
-        self.client = APIClient()
-
-        # include appropriate credentials on all requests
-        response = self.client.post(
-            reverse('users:login'),
-            {'username': 'doctor', 'password': 'doctor'},
-            format='json'
-        )
-        self.client.credentials(HTTP_AUTHORIZATION='Token ' + response.data['token'])
-
-        # initialize a doctor profile
-        url = reverse('users:doctor-init')
         self.hospital = Hospital.objects.create(
             name='test',
             location='test',
@@ -90,14 +78,21 @@ class DoctorTests(APITestCase):
             phone=123456,
             description='test'
         )
-        self.data = {
+
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
+
+        # Initialize the doctor using API
+        url = reverse('users:doctor-init')
+        data = {
             'name': 'Dr Test',
             'department': 'NEO',
             'years': 20,
             'title': 'C',
-            'hospital': 1
+            'hospital': self.hospital.id
         }
-        self.client.post(url, self.data, format='json')
+        self.client.post(url, data, format='json')
+        self.doctor = Doctor.objects.first()
 
     def test_get_and_update_doctor_profile(self):
         """Ensure we can get and update profile of the doctor."""
@@ -105,7 +100,7 @@ class DoctorTests(APITestCase):
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['name'], self.data['name'])
+        self.assertEqual(response.data['name'], self.doctor.name)
 
         # update profile
         new_data = response.data
