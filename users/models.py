@@ -61,6 +61,7 @@ class Patient(models.Model):
     name = models.CharField(default='unnamed', max_length=50, verbose_name='姓名')
     avatar = models.ImageField(upload_to='avatars/', blank=True, verbose_name='头像')
     favorite_doctors = models.ManyToManyField(Doctor, blank=True)
+    starred_questions = models.ManyToManyField('qa.question')
     created = models.DateTimeField(auto_now_add=True, verbose_name='注册时间')
 
     class Meta:
