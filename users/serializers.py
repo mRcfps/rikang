@@ -41,4 +41,4 @@ class InformationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Information
-        fields = '__all__'
+        exclude = ('id',)
