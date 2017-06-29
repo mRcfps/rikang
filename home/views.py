@@ -67,9 +67,9 @@ class DoctorFavView(APIView):
 
     authentication_classes = (TokenAuthentication,)
 
-    def get(self, request, doctor_id):
+    def get(self, request, *args, **kwargs):
         patient = Patient.objects.get(user=request.user)
-        doctor = Doctor.objects.get(id=doctor_id)
+        doctor = Doctor.objects.get(id=self.kwargs['pk'])
         patient.favorite_doctors.add(doctor)
         patient.save()
 
