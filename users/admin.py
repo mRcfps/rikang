@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Doctor, Patient
+from .models import Doctor, Patient, Information
 
 
 class DoctorAdmin(admin.ModelAdmin):
@@ -15,5 +15,11 @@ class PatientAdmin(admin.ModelAdmin):
 
     list_display = ('name', 'created')
 
+
+class InfoAdmin(admin.ModelAdmin):
+
+    list_display = ('doctor_name',)
+
 admin.site.register(Doctor, DoctorAdmin)
 admin.site.register(Patient, PatientAdmin)
+admin.site.register(Information, InfoAdmin)
