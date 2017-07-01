@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.serializers import AuthTokenSerializer
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import generics, parsers, status
@@ -30,7 +30,6 @@ class UserLoginView(APIView):
 
 class UserRegistrationView(generics.CreateAPIView):
 
-    permission_classes = (AllowAny,)
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
@@ -40,6 +39,7 @@ class UserChangePasswordView(generics.UpdateAPIView):
 
     serializer_class = UserSerializer
     authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
 
     def get_object(self):
         return User.objects.get(id=self.request.user.id)
@@ -49,6 +49,7 @@ class DoctorInitView(generics.CreateAPIView):
 
     queryset = Doctor.objects.all()
     authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
     serializer_class = DoctorSerializer
 
     def perform_create(self, serializer):
@@ -61,6 +62,7 @@ class DoctorInitView(generics.CreateAPIView):
 class DoctorProfileView(generics.RetrieveUpdateAPIView):
 
     authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
     serializer_class = DoctorSerializer
 
     def get_object(self):
@@ -70,6 +72,7 @@ class DoctorProfileView(generics.RetrieveUpdateAPIView):
 class DoctorInfoView(generics.RetrieveUpdateAPIView):
 
     authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
     serializer_class = InformationSerializer
 
     def get_object(self):
@@ -80,6 +83,7 @@ class DoctorInfoView(generics.RetrieveUpdateAPIView):
 class PatientProfileView(generics.RetrieveUpdateAPIView):
 
     authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
     serializer_class = PatientSerializer
 
     def get_object(self):
