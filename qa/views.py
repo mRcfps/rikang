@@ -83,4 +83,4 @@ class AnswerUpvoteView(APIView):
         answer.upvotes += 1
         answer.save()
 
-        return Response({'upvoted': True})
+        return Response({'id': int(pk), 'upvoted': True})
