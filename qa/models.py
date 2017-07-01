@@ -57,4 +57,5 @@ class Answer(models.Model):
         return self.author.name
 
     def author_info(self):
-        return self.author.hospital.name + self.author.title
+        hospital = None if self.author.hospital is None else self.author.hospital.name
+        return hospital + self.author.get_title_display()
