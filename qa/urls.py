@@ -29,6 +29,11 @@ urlpatterns = [
         name='answer-list'
     ),
     url(
+        r'questions/(?P<pk>\d+)/answers/new$',
+        views.NewAnswerView.as_view(),
+        name='new-answer'
+    ),
+    url(
         r'answers/(?P<pk>\d+)/$',
         views.AnswersDetailView.as_view(),
         name='answer-detail'

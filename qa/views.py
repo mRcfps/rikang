@@ -46,12 +46,21 @@ class QuestionStarView(APIView):
         return Response({'id': int(pk), 'starred': True})
 
 
-class AnswersListView(generics.ListCreateAPIView):
+class AnswersListView(generics.ListAPIView):
 
     serializer_class = AnswerSerializer
 
     def get_queryset(self):
         return Answer.objects.filter(question__id=self.kwargs['pk'])
+
+
+class NewAnswerView(generics.CreateAPIView):
+
+    serializer_class = AnswerSerializer
+    authentication_classes = (TokenAuthentication,)
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user.doctor)
 
 
 class AnswersDetailView(generics.RetrieveUpdateAPIView):
@@ -62,8 +71,8 @@ class AnswersDetailView(generics.RetrieveUpdateAPIView):
 
 class AnswerUpvoteView(APIView):
 
-    def get(self, request):
-        answer = Answer.objects.get(id=self.kwargs['pk'])
+    def get(self, request, pk):
+        answer = Answer.objects.get(id=pk)
         answer.upvotes += 1
         answer.save()
 
