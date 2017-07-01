@@ -12,7 +12,7 @@ class Question(models.Model):
         max_length=3,
         verbose_name='科室'
     )
-    questioner = models.ForeignKey(Patient, verbose_name='提问者')
+    questioner = models.ForeignKey(Patient, null=True, verbose_name='提问者')
     body = models.TextField(verbose_name='内容')
     solved = models.BooleanField(default=False, verbose_name='已解决')
     stars = models.IntegerField(default=0, verbose_name='关注人数')

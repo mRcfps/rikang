@@ -25,6 +25,7 @@ class Doctor(models.Model):
     avatar = models.ImageField(upload_to='avatars/', blank=True, verbose_name='头像')
     hospital = models.ForeignKey(Hospital,
                                  related_name='doctors',
+                                 null=True,
                                  verbose_name='所属医院')
     department = models.CharField(choices=departments.DEPARTMENT_CHOICES,
                                   max_length=3,
