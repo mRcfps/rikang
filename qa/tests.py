@@ -68,6 +68,22 @@ class QuestionTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertNotEqual(Question.objects.count(), TEST_QUESTION_NUM)
 
+    def test_add_and_get_images_to_question(self):
+        """Ensure we can add images to a question and retrieve them."""
+        url = reverse('qa:question-add-image', args=[self.test_question.id])
+        with open('test_img.jpg', 'rb') as fp:
+            data = {'question': self.test_question.id, 'image': fp}
+            response = self.client.post(url, data)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertNotEqual(Question.objects.first().images.count(), 0)
+
+        url = reverse('qa:question-image-list', args=[self.test_question.id])
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertNotEqual(response.data, None)
+
     def test_update_question(self):
         """Ensure we can edit an existed question."""
         url = reverse('qa:question-detail', args=[self.test_question.id])
