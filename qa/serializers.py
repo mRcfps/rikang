@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from qa.models import Question, Answer
+from qa.models import Question, Answer, QuestionImage
 
 
 class QuestionSerializer(serializers.ModelSerializer):
@@ -18,3 +18,10 @@ class AnswerSerializer(serializers.ModelSerializer):
         fields = ('id', 'question', 'author', 'author_name',
                   'author_info', 'diagnosis', 'prescription',
                   'course', 'advice', 'picked', 'upvotes', 'created')
+
+
+class QuestionImageSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = QuestionImage
+        fields = ('question', 'image')

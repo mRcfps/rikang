@@ -30,6 +30,12 @@ class Question(models.Model):
         return self.answers.count()
 
 
+class QuestionImage(models.Model):
+
+    question = models.ForeignKey(Question, related_name='images')
+    image = models.ImageField(upload_to='questions/', verbose_name='照片')
+
+
 class Answer(models.Model):
 
     question = models.ForeignKey(Question,

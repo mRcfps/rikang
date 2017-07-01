@@ -4,8 +4,8 @@ from rest_framework.response import Response
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
-from qa.models import Question, Answer
-from qa.serializers import QuestionSerializer, AnswerSerializer
+from qa.models import Question, Answer, QuestionImage
+from qa.serializers import QuestionSerializer, AnswerSerializer, QuestionImageSerializer
 from users.models import Patient
 
 
@@ -24,6 +24,18 @@ class NewQuestionView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(questioner=self.request.user.patient)
+
+
+class QuestionAddImageView(generics.CreateAPIView):
+
+    queryset = QuestionImage.objects.all()
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    serializer_class = QuestionImageSerializer
+
+    def perform_create(self, serializer):
+        question = Question.objects.get(id=self.kwargs['pk'])
+        serializer.save(question=question)
 
 
 class QuestionDetailView(generics.RetrieveUpdateAPIView):
