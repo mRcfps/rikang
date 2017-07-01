@@ -1,5 +1,6 @@
 venv/
 media/
+.vscode/
 __pycache__
 *.pyc
 db.sqlite3
