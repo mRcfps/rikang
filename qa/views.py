@@ -8,10 +8,20 @@ from qa.serializers import QuestionSerializer, AnswerSerializer
 from users.models import Patient
 
 
-class QuestionListView(generics.ListCreateAPIView):
+class QuestionListView(generics.ListAPIView):
 
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer
+
+
+class NewQuestionView(generics.CreateAPIView):
+
+    queryset = Question.objects.all()
+    authentication_classes = (TokenAuthentication,)
+    serializer_class = QuestionSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(questioner=self.request.user.patient)
 
 
 class QuestionDetailView(generics.RetrieveUpdateAPIView):

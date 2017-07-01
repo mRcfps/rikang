@@ -10,7 +10,7 @@ urlpatterns = [
     ),
     url(
         r'^questions/new$',
-        views.QuestionListView.as_view(),
+        views.NewQuestionView.as_view(),
         name='new-question'
     ),
     url(
