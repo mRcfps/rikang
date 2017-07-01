@@ -34,8 +34,8 @@ class QuestionStarView(APIView):
 
     authentication_classes = (TokenAuthentication,)
 
-    def get(self, request, *args, **kwargs):
-        question = Question.objects.get(id=self.kwargs['pk'])
+    def get(self, request, pk):
+        question = Question.objects.get(id=pk)
         question.stars += 1
         question.save()
 
@@ -43,7 +43,7 @@ class QuestionStarView(APIView):
         patient.starred_questions.add(question)
         patient.save()
 
-        return Response({'starred': True})
+        return Response({'id': int(pk), 'starred': True})
 
 
 class AnswersListView(generics.ListCreateAPIView):
