@@ -4,12 +4,15 @@ from django.contrib.auth.models import User
 from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
 
-from users.models import Patient
+from users.models import Doctor, Patient
 from qa.models import Question, Answer
 
 # Number of questions for test
 # Should be larger than PAGE_SIZE
 TEST_QUESTION_NUM = 20
+
+# Number of answers for test
+TEST_ANSWER_NUM = 5
 
 
 class QuestionTests(APITestCase):
@@ -87,3 +90,51 @@ class QuestionTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertNotEqual(Question.objects.first().stars, 0)
         self.assertNotEqual(self.patient.starred_questions.count(), 0)
+
+
+class AnswerTests(APITestCase):
+    """Test suite for the answer model."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(username='test', password='test')
+        self.doctor = Doctor.objects.create(user=self.user, name='test', department='GYN', years=20, title='C')
+        self.question = Question.objects.create(title='test', department='GYN', body='test')
+
+        for _ in range(TEST_ANSWER_NUM):
+            Answer.objects.create(question=self.question, author=self.doctor)
+
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
+        self.test_answer = Answer.objects.first()
+
+    def test_get_answer_list(self):
+        """Ensure we can get all answers of one question."""
+        url = reverse('qa:answer-list', args=[self.question.id])
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], TEST_ANSWER_NUM)
+
+    def test_get_answer_by_id(self):
+        """Ensure we can get an answer by id."""
+        url = reverse('qa:answer-detail', args=[self.test_answer.id])
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_create_new_answer(self):
+        """Ensure we can create a new answer."""
+        url = reverse('qa:new-answer', args=[self.question.id])
+        data = {'question': self.question.id, 'author': self.doctor.id}
+        response = self.client.post(url, data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertNotEqual(Answer.objects.count(), TEST_ANSWER_NUM)
+
+    def test_upvote_answer(self):
+        """Ensure we can upvote an answer."""
+        url = reverse('qa:answer-upvote', args=[self.test_answer.id])
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertNotEqual(Answer.objects.first().upvotes, 0)
