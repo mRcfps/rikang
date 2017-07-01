@@ -44,6 +44,18 @@ class QuestionDetailView(generics.RetrieveUpdateAPIView):
     serializer_class = QuestionSerializer
 
 
+class QuestionImageListView(generics.ListAPIView):
+
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    serializer_class = QuestionImageSerializer
+    pagination_class = None
+
+    def get_queryset(self):
+        question = Question.objects.get(id=self.kwargs['pk'])
+        return question.images.all()
+
+
 class QuestionStarView(APIView):
 
     authentication_classes = (TokenAuthentication,)

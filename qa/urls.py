@@ -19,6 +19,11 @@ urlpatterns = [
         name='question-add-image'
     ),
     url(
+        r'^questions/(?P<pk>\d+)/images/$',
+        views.QuestionImageListView.as_view(),
+        name='question-image-list'
+    ),
+    url(
         r'^questions/(?P<pk>\d+)/$',
         views.QuestionDetailView.as_view(),
         name='question-detail'
