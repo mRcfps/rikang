@@ -25,11 +25,14 @@ class PostTests(APITestCase):
 
     def setUp(self):
         """Initialize several posts to play with."""
+        self.user = User.objects.create_user(username='test', password='test')
+
         for index in range(TEST_POST_NUM):
             content = 'Test {}'.format(index)
             Post.objects.create(title=content, body=content)
 
         self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
         self.test_post = Post.objects.first()
 
     def test_get_post_list(self):
@@ -57,10 +60,13 @@ class HospitalTests(APITestCase):
 
     def setUp(self):
         """Initialize several hospitals to play with."""
+        self.user = User.objects.create_user(username='test', password='test')
+
         for _ in range(TEST_HOSPITAL_NUM):
             Hospital.objects.create(name='test', rank='3A', phone=123456)
 
         self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
         self.test_hospital = Hospital.objects.first()
 
     def test_get_Hospital_list(self):
@@ -88,6 +94,8 @@ class DoctorTests(APITestCase):
 
     def setUp(self):
         """Initialize several doctors to play with."""
+        self.user = User.objects.create_user(username='test', password='test')
+
         # A hospital is needed to be referenced as FK
         hospital = Hospital.objects.create(
             name='test',
@@ -110,6 +118,7 @@ class DoctorTests(APITestCase):
             Information.objects.create(doctor=doctor)
 
         self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
         self.test_doctor = Doctor.objects.first()
 
     def test_get_doctor_list(self):
