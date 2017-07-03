@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.serializers import AuthTokenSerializer
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import generics, parsers, status
@@ -18,6 +18,8 @@ from users.serializers import (UserSerializer,
 class UserLoginView(APIView):
 
     serializer_class = AuthTokenSerializer
+    authentication_classes = set()
+    permission_classes = (AllowAny,)
 
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
@@ -32,14 +34,14 @@ class UserRegistrationView(generics.CreateAPIView):
 
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    authentication_classes = set()
+    permission_classes = (AllowAny,)
 
 
 class UserChangePasswordView(generics.UpdateAPIView):
     """Allow users to change their password with token auth."""
 
     serializer_class = UserSerializer
-    authentication_classes = (TokenAuthentication,)
-    permission_classes = (IsAuthenticated,)
 
     def get_object(self):
         return User.objects.get(id=self.request.user.id)
@@ -48,8 +50,6 @@ class UserChangePasswordView(generics.UpdateAPIView):
 class DoctorInitView(generics.CreateAPIView):
 
     queryset = Doctor.objects.all()
-    authentication_classes = (TokenAuthentication,)
-    permission_classes = (IsAuthenticated,)
     serializer_class = DoctorSerializer
 
     def perform_create(self, serializer):
@@ -61,8 +61,6 @@ class DoctorInitView(generics.CreateAPIView):
 
 class DoctorProfileView(generics.RetrieveUpdateAPIView):
 
-    authentication_classes = (TokenAuthentication,)
-    permission_classes = (IsAuthenticated,)
     serializer_class = DoctorSerializer
 
     def get_object(self):
@@ -71,8 +69,6 @@ class DoctorProfileView(generics.RetrieveUpdateAPIView):
 
 class DoctorInfoView(generics.RetrieveUpdateAPIView):
 
-    authentication_classes = (TokenAuthentication,)
-    permission_classes = (IsAuthenticated,)
     serializer_class = InformationSerializer
 
     def get_object(self):
@@ -82,8 +78,6 @@ class DoctorInfoView(generics.RetrieveUpdateAPIView):
 
 class PatientProfileView(generics.RetrieveUpdateAPIView):
 
-    authentication_classes = (TokenAuthentication,)
-    permission_classes = (IsAuthenticated,)
     serializer_class = PatientSerializer
 
     def get_object(self):

@@ -1,8 +1,6 @@
 from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.authentication import TokenAuthentication
-from rest_framework.permissions import IsAuthenticated
 
 from users.models import Doctor, Information, Patient
 from users.serializers import DoctorSerializer, InformationSerializer
@@ -65,9 +63,6 @@ class DoctorInfoView(generics.RetrieveAPIView):
 class DoctorFavView(APIView):
     """GET this endpoint and the user will have desired doctor added
     to his/her favorite_doctors."""
-
-    authentication_classes = (TokenAuthentication,)
-    permission_classes = (IsAuthenticated,)
 
     def get(self, request, *args, **kwargs):
         patient = Patient.objects.get(user=request.user)
