@@ -4,11 +4,13 @@ from rest_framework.response import Response
 
 from users.models import Doctor, Information, Patient
 from users.serializers import DoctorSerializer, InformationSerializer
-from home.models import Post, Hospital
+from home.models import Post, Hospital, DoctorComment
 from home.serializers import (PostListSerializer,
                               PostDetailSerializer,
                               HospitalListSerializer,
-                              HospitalDetailSerializer)
+                              HospitalDetailSerializer,
+                              CommentDisplaySerializer,
+                              NewCommentDisplaySerializer)
 
 
 class PostListView(generics.ListAPIView):
@@ -71,3 +73,22 @@ class DoctorFavView(APIView):
         patient.save()
 
         return Response({'success': True})
+
+
+class DoctorCommentsView(generics.ListAPIView):
+
+    serializer_class = CommentDisplaySerializer
+
+    def get_queryset(self):
+        doctor = Doctor.objects.get(id=self.kwargs['pk'])
+        return DoctorComment.objects.filter(doctor=doctor)
+
+
+class DoctorNewCommentView(generics.CreateAPIView):
+
+    queryset = DoctorComment.objects.all()
+    serializer_class = NewCommentDisplaySerializer
+
+    def perform_create(self, serializer):
+        doctor = Doctor.objects.get(id=self.kwargs['pk'])
+        serializer.save(patient=self.request.user.patient, doctor=doctor)

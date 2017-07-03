@@ -72,9 +72,3 @@ class DoctorComment(models.Model):
     class Meta:
         verbose_name = '医生评论'
         verbose_name_plural = verbose_name
-
-    def patient_name(self):
-        return self.patient.name
-
-    def patient_avatar(self):
-        return self.patient.avatar

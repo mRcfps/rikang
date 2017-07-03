@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from home.models import Post, Hospital
+from home.models import Post, Hospital, DoctorComment
 
 
 class PostListSerializer(serializers.ModelSerializer):
@@ -30,3 +30,17 @@ class HospitalDetailSerializer(serializers.ModelSerializer):
         model = Hospital
         fields = ('id', 'name', 'location', 'photo', 'doctor_num',
                   'phone', 'description', 'rank')
+
+
+class CommentDisplaySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = DoctorComment
+        fields = ('patient', 'anonymous', 'ratings', 'created', 'body')
+
+
+class NewCommentDisplaySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = DoctorComment
+        fields = ('anonymous', 'ratings', 'body')
