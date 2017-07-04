@@ -12,7 +12,7 @@ class QuestionSerializer(serializers.ModelSerializer):
                   'answer_num', 'solved', 'stars', 'created')
 
 
-class AnswerSerializer(serializers.ModelSerializer):
+class AnswerDisplaySerializer(serializers.ModelSerializer):
 
     author = DoctorSerializer()
 
@@ -20,7 +20,15 @@ class AnswerSerializer(serializers.ModelSerializer):
         model = Answer
         fields = ('id', 'question', 'author', 'diagnosis', 'prescription',
                   'course', 'advice', 'picked', 'upvotes', 'created')
+        read_only_fields = ('picked', 'upvotes', 'created')
 
+
+class AnswerEditSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Answer
+        fields = ('question', 'author', 'diagnosis', 'prescription',
+                  'course', 'advice')
 
 class QuestionImageSerializer(serializers.ModelSerializer):
 

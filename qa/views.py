@@ -3,7 +3,10 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from qa.models import Question, Answer, QuestionImage
-from qa.serializers import QuestionSerializer, AnswerSerializer, QuestionImageSerializer
+from qa.serializers import (QuestionSerializer,
+                            AnswerDisplaySerializer,
+                            AnswerEditSerializer,
+                            QuestionImageSerializer)
 from users.models import Patient
 
 
@@ -64,7 +67,7 @@ class QuestionStarView(APIView):
 
 class AnswersListView(generics.ListAPIView):
 
-    serializer_class = AnswerSerializer
+    serializer_class = AnswerDisplaySerializer
 
     def get_queryset(self):
         return Answer.objects.filter(question__id=self.kwargs['pk'])
@@ -72,7 +75,7 @@ class AnswersListView(generics.ListAPIView):
 
 class NewAnswerView(generics.CreateAPIView):
 
-    serializer_class = AnswerSerializer
+    serializer_class = AnswerEditSerializer
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user.doctor)
@@ -81,7 +84,13 @@ class NewAnswerView(generics.CreateAPIView):
 class AnswersDetailView(generics.RetrieveUpdateAPIView):
 
     queryset = Answer.objects.all()
-    serializer_class = AnswerSerializer
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return AnswerDisplaySerializer
+        else:
+            # The request method is PUT
+            return AnswerEditSerializer
 
 
 class AnswerUpvoteView(APIView):
