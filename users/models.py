@@ -52,9 +52,6 @@ class Information(models.Model):
     achievements = models.TextField(blank=True, verbose_name='学术研究成果及获奖情况')
     motto = models.TextField(blank=True, verbose_name='医生寄语')
 
-    def doctor_name(self):
-        return self.doctor.name
-
 
 class Patient(models.Model):
 

@@ -16,10 +16,6 @@ class PatientAdmin(admin.ModelAdmin):
     list_display = ('name', 'created')
 
 
-class InfoAdmin(admin.ModelAdmin):
-
-    list_display = ('doctor_name',)
-
 admin.site.register(Doctor, DoctorAdmin)
 admin.site.register(Patient, PatientAdmin)
-admin.site.register(Information, InfoAdmin)
+admin.site.register(Information)
