@@ -42,6 +42,16 @@ class HospitalDetailView(generics.RetrieveAPIView):
     serializer_class = HospitalDetailSerializer
 
 
+class HospitalDoctorsView(generics.ListAPIView):
+    """GET all doctors of a hospital by given id."""
+
+    serializer_class = DoctorSerializer
+
+    def get_queryset(self):
+        hospital = Hospital.objects.get(id=self.kwargs['pk'])
+        return hospital.doctors.all()
+
+
 class DoctorListView(generics.ListAPIView):
     """GET a collection of doctors。"""
 

@@ -24,6 +24,11 @@ urlpatterns = [
         name='hospital-detail'
     ),
     url(
+        r'hospitals/(?P<pk>\d+)/doctors/$',
+        views.HospitalDoctorsView.as_view(),
+        name='hospital-doctors'
+    ),
+    url(
         r'doctors/$',
         views.DoctorListView.as_view(),
         name='doctor-list'
