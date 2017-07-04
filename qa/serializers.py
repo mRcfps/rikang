@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from qa.models import Question, Answer, QuestionImage
+from users.serializers import DoctorSerializer
 
 
 class QuestionSerializer(serializers.ModelSerializer):
@@ -13,10 +14,11 @@ class QuestionSerializer(serializers.ModelSerializer):
 
 class AnswerSerializer(serializers.ModelSerializer):
 
+    author = DoctorSerializer()
+
     class Meta:
         model = Answer
-        fields = ('id', 'question', 'author', 'author_name',
-                  'author_info', 'diagnosis', 'prescription',
+        fields = ('id', 'question', 'author', 'diagnosis', 'prescription',
                   'course', 'advice', 'picked', 'upvotes', 'created')
 
 

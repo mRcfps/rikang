@@ -58,10 +58,3 @@ class Answer(models.Model):
 
     def __str__(self):
         return '{}的回答'.format(self.author.name)
-
-    def author_name(self):
-        return self.author.name
-
-    def author_info(self):
-        hospital = "" if self.author.hospital is None else self.author.hospital.name
-        return hospital + self.author.get_title_display()
