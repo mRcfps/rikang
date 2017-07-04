@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from home.models import Post, Hospital, DoctorComment
+from users.serializers import PatientSerializer
 
 
 class PostListSerializer(serializers.ModelSerializer):
@@ -33,6 +34,8 @@ class HospitalDetailSerializer(serializers.ModelSerializer):
 
 
 class CommentDisplaySerializer(serializers.ModelSerializer):
+
+    patient = PatientSerializer()
 
     class Meta:
         model = DoctorComment
