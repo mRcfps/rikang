@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from home.models import Post, Hospital, DoctorComment
+from qa.models import Answer
 from users.serializers import PatientSerializer
 
 
@@ -31,6 +32,16 @@ class HospitalDetailSerializer(serializers.ModelSerializer):
         model = Hospital
         fields = ('id', 'name', 'location', 'photo', 'doctor_num',
                   'phone', 'description', 'rank')
+
+
+class DoctorAnswerSerializer(serializers.ModelSerializer):
+
+    question_title = serializers.CharField(source='question.title')
+
+    class Meta:
+        model = Answer
+        fields = ('id', 'question_title', 'question', 'diagnosis',
+                  'prescription', 'course', 'advice', 'picked', 'upvotes')
 
 
 class CommentDisplaySerializer(serializers.ModelSerializer):

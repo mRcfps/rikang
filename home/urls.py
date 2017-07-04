@@ -44,6 +44,11 @@ urlpatterns = [
         name='doctor-fav'
     ),
     url(
+        r'doctors/(?P<pk>\d+)/answers/$',
+        views.DoctorAnswersView.as_view(),
+        name='doctor-answers'
+    ),
+    url(
         r'doctors/(?P<pk>\d+)/comments/$',
         views.DoctorCommentsView.as_view(),
         name='doctor-comments'

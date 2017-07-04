@@ -9,6 +9,7 @@ from home.serializers import (PostListSerializer,
                               PostDetailSerializer,
                               HospitalListSerializer,
                               HospitalDetailSerializer,
+                              DoctorAnswerSerializer,
                               CommentDisplaySerializer,
                               NewCommentDisplaySerializer)
 
@@ -73,6 +74,15 @@ class DoctorFavView(APIView):
         patient.save()
 
         return Response({'success': True})
+
+
+class DoctorAnswersView(generics.ListAPIView):
+
+    serializer_class = DoctorAnswerSerializer
+
+    def get_queryset(self):
+        doctor = Doctor.objects.get(id=self.kwargs['pk'])
+        return doctor.answers.all()
 
 
 class DoctorCommentsView(generics.ListAPIView):
