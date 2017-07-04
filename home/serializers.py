@@ -50,7 +50,7 @@ class CommentDisplaySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = DoctorComment
-        fields = ('patient', 'anonymous', 'ratings', 'created', 'body')
+        fields = ('id', 'patient', 'anonymous', 'ratings', 'created', 'body')
 
 
 class NewCommentDisplaySerializer(serializers.ModelSerializer):
