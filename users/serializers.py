@@ -24,6 +24,8 @@ class UserSerializer(serializers.ModelSerializer):
 
 class DoctorSerializer(serializers.ModelSerializer):
 
+    hospital_name = serializers.CharField(source='hospital.name')
+
     class Meta:
         model = Doctor
         fields = ('id', 'name', 'avatar', 'department', 'years',
