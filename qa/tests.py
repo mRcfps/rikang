@@ -68,7 +68,7 @@ class QuestionTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertNotEqual(Question.objects.count(), TEST_QUESTION_NUM)
 
-    def test_add_and_get_images_to_question(self):
+    def test_add_and_get_images(self):
         """Ensure we can add images to a question and retrieve them."""
         url = reverse('qa:question-add-image', args=[self.test_question.id])
         with open('test_img.jpg', 'rb') as fp:
