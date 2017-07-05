@@ -4,9 +4,10 @@ from rest_framework.response import Response
 
 from qa.models import Question, Answer, QuestionImage
 from qa.serializers import (QuestionSerializer,
+                            QuestionImageSerializer,
                             AnswerDisplaySerializer,
                             AnswerEditSerializer,
-                            QuestionImageSerializer)
+                            AnswerCommentDisplaySerializer)
 from users.models import Patient
 
 
@@ -101,3 +102,12 @@ class AnswerUpvoteView(APIView):
         answer.save()
 
         return Response({'id': int(pk), 'upvoted': True})
+
+
+class AnswerCommentsView(generics.ListAPIView):
+
+    serializer_class = AnswerCommentDisplaySerializer
+
+    def get_queryset(self):
+        answer = Answer.objects.get(id=self.kwargs['pk'])
+        return answer.comments.all()

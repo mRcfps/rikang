@@ -53,4 +53,9 @@ urlpatterns = [
         views.AnswerUpvoteView.as_view(),
         name='answer-upvote'
     ),
+    url(
+        r'^answers/(?P<pk>\d+)/comments/$',
+        views.AnswerCommentsView.as_view(),
+        name='answer-comments'
+    ),
 ]
