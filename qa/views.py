@@ -1,3 +1,5 @@
+from django.core.exceptions import ObjectDoesNotExist
+
 from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -119,7 +121,8 @@ class AnswerNewCommentView(generics.CreateAPIView):
     serializer_class = NewAnswerCommentSerializer
 
     def perform_create(self, serializer):
-        if self.request.user.doctor is not None:
+        try:
             serializer.save(replier=self.request.user.doctor)
-        else:
+        except ObjectDoesNotExist:
+            # this user is a patient
             serializer.save(replier=self.request.user.patient)
