@@ -49,5 +49,16 @@ class AnswerCommentDisplaySerializer(serializers.ModelSerializer):
 
     def get_replier_avatar(self, comment):
         request = self.context.get('request')
-        replier_avatar = comment.replier.avatar.url
-        return request.build_absolute_uri(replier_avatar)
+        try:
+            replier_avatar = comment.replier.avatar.url
+            return request.build_absolute_uri(replier_avatar)
+        except ValueError:
+            # this user has no avatar
+            return None
+
+
+class NewAnswerCommentSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = AnswerComment
+        fields = ('answer', 'reply_to', 'body')

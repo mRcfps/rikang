@@ -58,4 +58,9 @@ urlpatterns = [
         views.AnswerCommentsView.as_view(),
         name='answer-comments'
     ),
+    url(
+        r'^answers/(?P<pk>\d+)/comments/new$',
+        views.AnswerNewCommentView.as_view(),
+        name='answer-new-comment'
+    ),
 ]

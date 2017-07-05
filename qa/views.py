@@ -7,7 +7,8 @@ from qa.serializers import (QuestionSerializer,
                             QuestionImageSerializer,
                             AnswerDisplaySerializer,
                             AnswerEditSerializer,
-                            AnswerCommentDisplaySerializer)
+                            AnswerCommentDisplaySerializer,
+                            NewAnswerCommentSerializer)
 from users.models import Patient
 
 
@@ -111,3 +112,14 @@ class AnswerCommentsView(generics.ListAPIView):
     def get_queryset(self):
         answer = Answer.objects.get(id=self.kwargs['pk'])
         return answer.comments.all()
+
+
+class AnswerNewCommentView(generics.CreateAPIView):
+
+    serializer_class = NewAnswerCommentSerializer
+
+    def perform_create(self, serializer):
+        if self.request.user.doctor is not None:
+            serializer.save(replier=self.request.user.doctor)
+        else:
+            serializer.save(replier=self.request.user.patient)
