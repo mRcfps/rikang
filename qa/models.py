@@ -1,4 +1,6 @@
 from django.db import models
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericForeignKey
 
 import departments
 from users.models import Doctor, Patient
@@ -58,3 +60,24 @@ class Answer(models.Model):
 
     def __str__(self):
         return '{}的回答'.format(self.author.name)
+
+
+class AnswerComment(models.Model):
+
+    answer = models.ForeignKey(Answer, related_name='comments', verbose_name='回答')
+    replier_type = models.ForeignKey(ContentType, null=True, blank=True, verbose_name='回答者身份')
+    replier_id = models.PositiveIntegerField(null=True, blank=True, verbose_name='回答者编号')
+    replier = GenericForeignKey('replier_type', 'replier_id')
+    reply_to = models.ForeignKey('self',
+                                 null=True,
+                                 blank=True,
+                                 related_name='replies',
+                                 verbose_name='回复评论')
+    body = models.TextField(verbose_name='评论内容')
+    upvotes = models.PositiveIntegerField(default=0, verbose_name='获赞数')
+    created = models.DateField(auto_now_add=True, verbose_name='创建时间')
+
+    class Meta:
+        ordering = ('-created',)
+        verbose_name = '回答评论'
+        verbose_name_plural = verbose_name
