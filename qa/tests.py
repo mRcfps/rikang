@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
 
 from users.models import Doctor, Patient
-from qa.models import Question, Answer
+from qa.models import Question, Answer, AnswerComment
 
 # Number of questions for test
 # Should be larger than PAGE_SIZE
@@ -13,6 +13,9 @@ TEST_QUESTION_NUM = 20
 
 # Number of answers for test
 TEST_ANSWER_NUM = 5
+
+# Number of comments for test
+TEST_COMMENT_NUM = 10
 
 
 class QuestionTests(APITestCase):
@@ -154,3 +157,71 @@ class AnswerTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertNotEqual(Answer.objects.first().upvotes, 0)
+
+
+class AnswerCommentTests(APITestCase):
+    """Test suite for the AnswerComment model."""
+
+    def setUp(self):
+        self.doctor_user = User.objects.create_user(username='test_doctor', password='test')
+        self.doctor = Doctor.objects.create(
+            user=self.doctor_user,
+            name='test_doctor',
+            department='GYN',
+            years=10,
+            title='A'
+        )
+
+        self.patient_user = User.objects.create_user(username='test_patient', password='test')
+        self.patient = Patient.objects.create(user=self.patient_user, name='test_patient')
+
+        self.client = APIClient()
+
+        self.question = Question.objects.create(
+            title='test',
+            department='NEO',
+            questioner=self.patient,
+            body='test'
+        )
+        self.answer = Answer.objects.create(
+            question=self.question,
+            author=self.doctor
+        )
+
+        for _ in range(TEST_COMMENT_NUM):
+            AnswerComment.objects.create(answer=self.answer, replier=self.patient)
+
+    def test_get_comment_list(self):
+        """Ensure we can get a list of comments of one answer."""
+        url = reverse('qa:answer-comments', args=[self.answer.id])
+        self.client.force_authenticate(user=self.patient_user)
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], TEST_COMMENT_NUM)
+
+    def test_patient_can_add_new_comment(self):
+        """Ensure a patient can create a new comment to an answer."""
+        url = reverse('qa:answer-new-comment', args=[self.answer.id])
+        data = {
+            'answer': self.answer.id,
+            'body': 'test',
+        }
+        self.client.force_authenticate(user=self.patient_user)
+        response = self.client.post(url, data)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertNotEqual(AnswerComment.objects.count(), TEST_COMMENT_NUM)
+
+    def test_doctor_can_add_new_comment(self):
+        """Ensure a doctor can create a new comment to an answer."""
+        url = reverse('qa:answer-new-comment', args=[self.answer.id])
+        data = {
+            'answer': self.answer.id,
+            'body': 'test',
+        }
+        self.client.force_authenticate(user=self.doctor_user)
+        response = self.client.post(url, data)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertNotEqual(AnswerComment.objects.count(), TEST_COMMENT_NUM)
