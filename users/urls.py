@@ -19,27 +19,27 @@ urlpatterns = [
         name='change-password'
     ),
     url(
-        r'^doctors/init$',
+        r'^doctor/init$',
         views.DoctorInitView.as_view(),
         name='doctor-init'
     ),
     url(
-        r'^doctors/profile/$',
+        r'^doctor/profile/$',
         views.DoctorProfileView.as_view(),
         name='doctor-profile'
     ),
     url(
-        r'^doctors/info/$',
+        r'^doctor/info/$',
         views.DoctorInfoView.as_view(),
         name='doctor-info'
     ),
     url(
-        r'patients/profile/$',
+        r'patient/profile/$',
         views.PatientProfileView.as_view(),
         name='patient-profile'
     ),
     url(
-        r'patients/starred-questions/$',
+        r'patient/starred-questions/$',
         views.PatientStarredQuestionsView.as_view(),
         name='patient-starred-questions'
     ),
