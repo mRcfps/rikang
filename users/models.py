@@ -74,8 +74,14 @@ class StarredQuestion(models.Model):
     patient = models.ForeignKey(Patient, related_name='starred_questions')
     question = models.ForeignKey('qa.question')
 
+    class Meta:
+        unique_together = ('patient', 'question')
+
 
 class FavoritePost(models.Model):
 
     patient = models.ForeignKey(Patient, related_name='favorite_posts')
     post = models.ForeignKey('home.post')
+
+    class Meta:
+        unique_together = ('patient', 'post')
