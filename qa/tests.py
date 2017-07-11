@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
 
-from users.models import Doctor, Patient
+from users.models import Doctor, Patient, StarredQuestion
 from qa.models import Question, Answer, AnswerComment
 
 # Number of questions for test
@@ -109,6 +109,17 @@ class QuestionTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertNotEqual(Question.objects.first().stars, 0)
         self.assertNotEqual(self.patient.starred_questions.count(), 0)
+
+    def test_get_all_starred_questions(self):
+        """Ensure we can get all of our starred questions."""
+        for question in Question.objects.all():
+            StarredQuestion.objects.create(patient=self.patient, question=question)
+
+        url = reverse('users:patient-starred-questions')
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], TEST_QUESTION_NUM)
 
 
 class AnswerTests(APITestCase):
