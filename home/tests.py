@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
 
 from home.models import Post, Hospital, DoctorComment
-from users.models import Doctor, Patient, Information
+from users.models import Doctor, Patient, Information, FavoritePost
 
 # Number of news for test
 # Should be larger than PAGE_SIZE
@@ -34,7 +34,7 @@ class PostTests(APITestCase):
 
         for index in range(TEST_POST_NUM):
             content = 'Test {}'.format(index)
-            Post.objects.create(title=content, body=content)
+            post = Post.objects.create(title=content, body=content)
 
         self.client = APIClient()
         self.client.force_authenticate(user=self.user)
@@ -66,6 +66,18 @@ class PostTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertNotEqual(self.patient.favorite_posts.count(), 0)
+
+    def test_get_all_fav_posts(self):
+        """Ensure a patient can get all his/her favorite posts."""
+        # supppose this patient has favved all test posts
+        for post in Post.objects.all():
+            FavoritePost.objects.create(patient=self.patient, post=post)
+
+        url = reverse('users:patient-fav-posts')
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], TEST_POST_NUM)
 
 
 class HospitalTests(APITestCase):
