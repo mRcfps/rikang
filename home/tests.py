@@ -30,6 +30,7 @@ class PostTests(APITestCase):
     def setUp(self):
         """Initialize several posts to play with."""
         self.user = User.objects.create_user(username='test', password='test')
+        self.patient = Patient.objects.create(user=self.user)
 
         for index in range(TEST_POST_NUM):
             content = 'Test {}'.format(index)
@@ -57,6 +58,14 @@ class PostTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['id'], self.test_post.id)
+
+    def test_fav_post(self):
+        """Ensure a patient can make a post his/her favorites."""
+        url = reverse('home:post-fav', args=[self.test_post.id])
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertNotEqual(self.patient.favorite_posts.count(), 0)
 
 
 class HospitalTests(APITestCase):
