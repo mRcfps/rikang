@@ -35,7 +35,7 @@ class PostFavView(generics.RetrieveAPIView):
     def get(self, request, *args, **kwargs):
         patient = Patient.objects.get(user=request.user)
         post = Post.objects.get(id=self.kwargs['pk'])
-        FavoritePost.objects.create(patient=patient, post=post)
+        fav_post, created = FavoritePost.objects.get_or_create(patient=patient, post=post)
 
         return Response({'id': self.kwargs['pk'], 'success': True})
 

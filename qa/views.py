@@ -63,7 +63,8 @@ class QuestionStarView(APIView):
         question.save()
 
         patient = Patient.objects.get(user=request.user)
-        StarredQuestion.objects.create(patient=patient, question=question)
+        starred_question, created = StarredQuestion.objects.get_or_create(patient=patient,
+                                                                          question=question)
 
         return Response({'id': int(pk), 'starred': True})
 
