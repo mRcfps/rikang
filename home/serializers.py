@@ -66,11 +66,11 @@ class FavoriteDoctorSerializer(serializers.ModelSerializer):
         model = FavoriteDoctor
         fields = ('id', 'name', 'avatar')
 
-    def get_doctor_avatar(self, fav_doctor):
+    def get_avatar(self, fav_doctor):
         request = self.context.get('request')
         try:
-            doctor_avatar = fav_doctor.doctor.avatar.url
-            return request.build_absolute_uri(doctor_avatar)
+            avatar = fav_doctor.doctor.avatar.url
+            return request.build_absolute_uri(avatar)
         except ValueError:
             # this doctor has no avatar
             return None
