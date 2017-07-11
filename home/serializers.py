@@ -3,7 +3,7 @@ from rest_framework import serializers
 from home.models import Post, Hospital, DoctorComment
 from qa.models import Answer
 from users.serializers import PatientSerializer
-from users.models import FavoritePost
+from users.models import FavoritePost, FavoriteDoctor
 
 
 class PostListSerializer(serializers.ModelSerializer):
@@ -54,6 +54,26 @@ class HospitalDetailSerializer(serializers.ModelSerializer):
         model = Hospital
         fields = ('id', 'name', 'location', 'photo', 'doctor_num',
                   'phone', 'description', 'rank')
+
+
+class FavoriteDoctorSerializer(serializers.ModelSerializer):
+
+    id = serializers.IntegerField(source='doctor.id')
+    name = serializers.CharField(source='doctor.name')
+    avatar = serializers.SerializerMethodField()
+
+    class Meta:
+        model = FavoriteDoctor
+        fields = ('id', 'name', 'avatar')
+
+    def get_doctor_avatar(self, fav_doctor):
+        request = self.context.get('request')
+        try:
+            doctor_avatar = fav_doctor.doctor.avatar.url
+            return request.build_absolute_uri(doctor_avatar)
+        except ValueError:
+            # this doctor has no avatar
+            return None
 
 
 class DoctorAnswerSerializer(serializers.ModelSerializer):

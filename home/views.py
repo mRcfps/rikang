@@ -2,7 +2,7 @@ from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from users.models import Doctor, Information, Patient, FavoritePost
+from users.models import Doctor, Information, Patient, FavoritePost, FavoriteDoctor
 from users.serializers import DoctorSerializer, InformationSerializer
 from home.models import Post, Hospital, DoctorComment
 from home.serializers import (PostListSerializer,
@@ -92,10 +92,10 @@ class DoctorFavView(APIView):
     def get(self, request, *args, **kwargs):
         patient = Patient.objects.get(user=request.user)
         doctor = Doctor.objects.get(id=self.kwargs['pk'])
-        patient.favorite_doctors.add(doctor)
-        patient.save()
+        fav_doctor, created = FavoriteDoctor.objects.get_or_create(patient=patient,
+                                                                   doctor=doctor)
 
-        return Response({'success': True})
+        return Response({'id': self.kwargs['pk'], 'success': True})
 
 
 class DoctorAnswersView(generics.ListAPIView):
