@@ -38,4 +38,9 @@ urlpatterns = [
         views.PatientProfileView.as_view(),
         name='patient-profile'
     ),
+    url(
+        r'starred-questions/$',
+        views.PatientStarredQuestionsView.as_view(),
+        name='patient-starred-questions'
+    ),
 ]

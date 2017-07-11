@@ -11,7 +11,7 @@ from qa.serializers import (QuestionSerializer,
                             AnswerEditSerializer,
                             AnswerCommentDisplaySerializer,
                             NewAnswerCommentSerializer)
-from users.models import Patient
+from users.models import Patient, StarredQuestion
 
 
 class QuestionListView(generics.ListAPIView):
@@ -63,8 +63,7 @@ class QuestionStarView(APIView):
         question.save()
 
         patient = Patient.objects.get(user=request.user)
-        patient.starred_questions.add(question)
-        patient.save()
+        StarredQuestion.objects.create(patient=patient, question=question)
 
         return Response({'id': int(pk), 'starred': True})
 

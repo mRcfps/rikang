@@ -13,6 +13,7 @@ from users.serializers import (UserSerializer,
                                DoctorSerializer,
                                PatientSerializer,
                                InformationSerializer)
+from qa.serializers import StarredQuestionSerializer
 
 
 class UserLoginView(APIView):
@@ -83,3 +84,13 @@ class PatientProfileView(generics.RetrieveUpdateAPIView):
     def get_object(self):
         profile, created = Patient.objects.get_or_create(user=self.request.user)
         return profile
+
+
+class PatientStarredQuestionsView(generics.ListAPIView):
+
+    serializer_class = StarredQuestionSerializer
+    pagination_class = None
+
+    def get_queryset(self):
+        patient = Patient.objects.get(user=self.request.user)
+        return patient.starred_questions.all()
