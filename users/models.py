@@ -55,9 +55,22 @@ class Information(models.Model):
 
 class Patient(models.Model):
 
+    MALE = 'M'
+    FEMALE = 'F'
+    UNKNOWN = 'U'
+
+    SEX_CHOICES = (
+        (MALE, '男'),
+        (FEMALE, '女'),
+        (UNKNOWN, '未选择'),
+    )
+
     user = models.OneToOneField(User, verbose_name='手机号')
     name = models.CharField(default='unnamed', max_length=50, verbose_name='姓名')
     avatar = models.ImageField(upload_to='avatars/', blank=True, verbose_name='头像')
+    sex = models.CharField(max_length=1, choices=SEX_CHOICES, default=UNKNOWN, verbose_name='性别')
+    age = models.PositiveIntegerField(blank=True, null=True, verbose_name='年龄')
+    medical_history = models.TextField(blank=True, null=True, verbose_name='疾病历史')
     created = models.DateTimeField(auto_now_add=True, verbose_name='注册时间')
 
     class Meta:

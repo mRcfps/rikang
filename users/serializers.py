@@ -35,9 +35,11 @@ class DoctorSerializer(serializers.ModelSerializer):
 
 class PatientSerializer(serializers.ModelSerializer):
 
+    phone = serializers.CharField(source='user.username')
+
     class Meta:
         model = Patient
-        fields = ('id', 'name', 'avatar')
+        fields = ('id', 'avatar', 'phone', 'name', 'sex', 'age', 'medical_history')
 
 
 class InformationSerializer(serializers.ModelSerializer):
