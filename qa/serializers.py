@@ -15,11 +15,12 @@ class QuestionSerializer(serializers.ModelSerializer):
 
 class StarredQuestionSerializer(serializers.ModelSerializer):
 
-    question = QuestionSerializer()
+    id = serializers.IntegerField(source='question.id')
+    title = serializers.CharField(source='question.title')
 
     class Meta:
         model = StarredQuestion
-        fields = ('question',)
+        fields = ('id', 'title')
 
 
 class AnswerDisplaySerializer(serializers.ModelSerializer):
