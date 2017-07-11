@@ -58,9 +58,9 @@ class Patient(models.Model):
     user = models.OneToOneField(User, verbose_name='手机号')
     name = models.CharField(default='unnamed', max_length=50, verbose_name='姓名')
     avatar = models.ImageField(upload_to='avatars/', blank=True, verbose_name='头像')
-    favorite_posts = models.ManyToManyField(Post, blank=True, null=True, verbose_name='收藏文章')
-    favorite_doctors = models.ManyToManyField(Doctor, blank=True, null=True, verbose_name='收藏医生')
-    starred_questions = models.ManyToManyField('qa.question', blank=True, null=True, verbose_name='关注的问题')
+    favorite_posts = models.ManyToManyField(Post, blank=True, verbose_name='收藏文章')
+    favorite_doctors = models.ManyToManyField(Doctor, blank=True, verbose_name='收藏医生')
+    starred_questions = models.ManyToManyField('qa.question', blank=True, verbose_name='关注的问题')
     created = models.DateTimeField(auto_now_add=True, verbose_name='注册时间')
 
     class Meta:
