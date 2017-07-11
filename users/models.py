@@ -60,7 +60,6 @@ class Patient(models.Model):
     avatar = models.ImageField(upload_to='avatars/', blank=True, verbose_name='头像')
     favorite_posts = models.ManyToManyField(Post, blank=True, verbose_name='收藏文章')
     favorite_doctors = models.ManyToManyField(Doctor, blank=True, verbose_name='收藏医生')
-    starred_questions = models.ManyToManyField('qa.question', blank=True, verbose_name='关注的问题')
     created = models.DateTimeField(auto_now_add=True, verbose_name='注册时间')
 
     class Meta:
@@ -69,3 +68,9 @@ class Patient(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class StarredQuestion(models.Model):
+
+    patient = models.ForeignKey(Patient, related_name='starred_questions')
+    question = models.ForeignKey('qa.question')
