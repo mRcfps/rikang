@@ -59,12 +59,14 @@ class QuestionStarView(APIView):
 
     def get(self, request, pk):
         question = Question.objects.get(id=pk)
-        question.stars += 1
-        question.save()
-
         patient = Patient.objects.get(user=request.user)
         starred_question, created = StarredQuestion.objects.get_or_create(patient=patient,
                                                                           question=question)
+
+        # Ensure a question can only be starred once by one user
+        if not created:
+            question.stars += 1
+            question.save()
 
         return Response({'id': int(pk), 'starred': True})
 
