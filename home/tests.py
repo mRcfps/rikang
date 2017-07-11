@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
 
 from home.models import Post, Hospital, DoctorComment
-from users.models import Doctor, Patient, Information, FavoritePost
+from users.models import Doctor, Patient, Information, FavoritePost, FavoriteDoctor
 
 # Number of news for test
 # Should be larger than PAGE_SIZE
@@ -120,15 +120,7 @@ class DoctorTests(APITestCase):
     def setUp(self):
         """Initialize several doctors to play with."""
         self.user = User.objects.create_user(username='test', password='test')
-
-        # A hospital is needed to be referenced as FK
-        hospital = Hospital.objects.create(
-            name='test',
-            location='test',
-            rank='3A',
-            phone=123456,
-            description='test'
-        )
+        self.patient = Patient.objects.create(user=self.user)
 
         for index in range(TEST_DOCTOR_NUM):
             user = User.objects.create_user(username=str(index), password='test')
@@ -137,8 +129,7 @@ class DoctorTests(APITestCase):
                 name='doctor {}'.format(index),
                 department='NEO',
                 years=20,
-                title='C',
-                hospital=hospital
+                title='C'
             )
             Information.objects.create(doctor=doctor)
 
@@ -171,6 +162,25 @@ class DoctorTests(APITestCase):
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_fav_doctor(self):
+        """Ensure we can fav a doctor."""
+        url = reverse('home:doctor-fav', args=[self.test_doctor.id])
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_get_all_fav_doctors(self):
+        """Ensure we can get all of a patient's favorite doctors."""
+        # suppose this patient has favved all test doctors
+        for doctor in Doctor.objects.all():
+            FavoriteDoctor.objects.create(patient=self.patient, doctor=doctor)
+
+        url = reverse('users:patient-fav-doctors')
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), TEST_DOCTOR_NUM)
 
 
 class DoctorCommentTests(APITestCase):
