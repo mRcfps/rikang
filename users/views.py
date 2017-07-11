@@ -99,6 +99,7 @@ class PatientStarredQuestionsView(generics.ListAPIView):
 class PatientFavDoctorsView(generics.ListAPIView):
 
     serializer_class = FavoriteDoctorSerializer
+    pagination_class = None
 
     def get_queryset(self):
         patient = Patient.objects.get(user=self.request.user)
