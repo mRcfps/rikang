@@ -2,7 +2,7 @@ from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from users.models import Doctor, Information, Patient
+from users.models import Doctor, Information, Patient, FavoritePost
 from users.serializers import DoctorSerializer, InformationSerializer
 from home.models import Post, Hospital, DoctorComment
 from home.serializers import (PostListSerializer,
@@ -26,6 +26,18 @@ class PostDetailView(generics.RetrieveAPIView):
 
     queryset = Post.objects.all()
     serializer_class = PostDetailSerializer
+
+
+class PostFavView(generics.RetrieveAPIView):
+    """GET this endpoint and the user will have desired post added
+    to his/her favorite_posts."""
+
+    def get(self, request, *args, **kwargs):
+        patient = Patient.objects.get(user=request.user)
+        post = Post.objects.get(id=self.kwargs['pk'])
+        FavoritePost.objects.create(patient=patient, post=post)
+
+        return Response({'id': self.kwargs['pk'], 'success': True})
 
 
 class HospitalListView(generics.ListAPIView):

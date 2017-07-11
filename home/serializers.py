@@ -3,6 +3,7 @@ from rest_framework import serializers
 from home.models import Post, Hospital, DoctorComment
 from qa.models import Answer
 from users.serializers import PatientSerializer
+from users.models import FavoritePost
 
 
 class PostListSerializer(serializers.ModelSerializer):
@@ -17,6 +18,27 @@ class PostDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ('id', 'title', 'photo', 'body', 'created')
+
+
+class FavoritePostSerializer(serializers.ModelSerializer):
+
+    id = serializers.IntegerField(source='post.id')
+    title = serializers.CharField(source='post.title')
+    photo = serializers.SerializerMethodField()
+    created = serializers.DateField(source='post.created')
+
+    class Meta:
+        model = FavoritePost
+        fields = ('id', 'title', 'photo', 'created')
+
+    def get_photo(self, fav_post):
+        request = self.context.get('request')
+        try:
+            photo = fav_post.post.photo.url
+            return request.build_absolute_uri(photo)
+        except ValueError:
+            # this post has no photo
+            return None
 
 
 class HospitalListSerializer(serializers.ModelSerializer):

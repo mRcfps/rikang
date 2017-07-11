@@ -14,6 +14,7 @@ from users.serializers import (UserSerializer,
                                PatientSerializer,
                                InformationSerializer)
 from qa.serializers import StarredQuestionSerializer
+from home.serializers import FavoritePostSerializer
 
 
 class UserLoginView(APIView):
@@ -89,8 +90,16 @@ class PatientProfileView(generics.RetrieveUpdateAPIView):
 class PatientStarredQuestionsView(generics.ListAPIView):
 
     serializer_class = StarredQuestionSerializer
-    pagination_class = None
 
     def get_queryset(self):
         patient = Patient.objects.get(user=self.request.user)
         return patient.starred_questions.all()
+
+
+class PatientFavPostsView(generics.ListAPIView):
+
+    serializer_class = FavoritePostSerializer
+
+    def get_queryset(self):
+        patient = Patient.objects.get(user=self.request.user)
+        return patient.favorite_posts.all()

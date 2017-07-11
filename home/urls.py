@@ -14,6 +14,11 @@ urlpatterns = [
         name='post-detail'
     ),
     url(
+        r'^posts/(?P<pk>\d+)/fav$',
+        views.PostFavView.as_view(),
+        name='post-fav'
+    ),
+    url(
         r'^hospitals/$',
         views.HospitalListView.as_view(),
         name='hospital-list'
