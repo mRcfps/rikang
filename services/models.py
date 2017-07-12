@@ -30,7 +30,7 @@ class Consultation(models.Model):
                               max_length=1,
                               default=UNPAID,
                               verbose_name='状态')
-    created = models.DateField(auto_now_add=True, verbose_name='创建时间')
+    created = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
 
     class Meta:
         verbose_name = '在线咨询'
