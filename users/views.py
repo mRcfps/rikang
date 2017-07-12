@@ -6,7 +6,7 @@ from rest_framework.authtoken.serializers import AuthTokenSerializer
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import generics, parsers, status
+from rest_framework import generics, status
 
 from users.models import Doctor, Patient, Information
 from users.serializers import (UserSerializer,
