@@ -5,5 +5,6 @@ urlpatterns = [
     url(r'^home/', include('home.urls', namespace='home')),
     url(r'^users/', include('users.urls', namespace='users')),
     url(r'^qa/', include('qa.urls', namespace='qa')),
+    url(r'^services/', include('services.urls', namespace='services')),
     url(r'^admin/', admin.site.urls),
 ]

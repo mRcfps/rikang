@@ -1,3 +1,8 @@
-from django.shortcuts import render
+from rest_framework import generics
 
-# Create your views here.
+from services.serializers import ConsultationSerializer
+
+
+class CreateConsultationView(generics.CreateAPIView):
+
+    serializer_class = ConsultationSerializer
