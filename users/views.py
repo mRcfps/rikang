@@ -13,6 +13,7 @@ from users.serializers import (UserSerializer,
                                DoctorSerializer,
                                PatientSerializer,
                                InformationSerializer)
+from users.permissions import RikangKeyPermission
 from users.verification import send_sms_code, verify_sms_code
 from qa.serializers import QuestionSerializer, StarredQuestionSerializer
 from home.serializers import FavoritePostSerializer, FavoriteDoctorSerializer
@@ -21,8 +22,8 @@ from home.serializers import FavoritePostSerializer, FavoriteDoctorSerializer
 class UserLoginView(APIView):
 
     serializer_class = AuthTokenSerializer
-    authentication_classes = set()
-    permission_classes = (AllowAny,)
+    authentication_classes = []
+    permission_classes = (RikangKeyPermission,)
 
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
@@ -37,8 +38,8 @@ class UserRegistrationView(generics.CreateAPIView):
 
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    authentication_classes = set()
-    permission_classes = (AllowAny,)
+    authentication_classes = []
+    permission_classes = (RikangKeyPermission,)
 
 
 class UserChangePasswordView(generics.UpdateAPIView):
@@ -51,6 +52,9 @@ class UserChangePasswordView(generics.UpdateAPIView):
 
 
 class RequestSmsCodeView(APIView):
+
+    authentication_classes = []
+    permission_classes = (RikangKeyPermission,)
 
     def post(self, request):
         phone = request.data['phone']
@@ -65,6 +69,9 @@ class RequestSmsCodeView(APIView):
 
 
 class VerifySmsCodeView(APIView):
+
+    authentication_classes = []
+    permission_classes = (RikangKeyPermission,)
 
     def post(self, request):
         if verify_sms_code(request.data['code']):
