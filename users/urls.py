@@ -19,6 +19,16 @@ urlpatterns = [
         name='change-password'
     ),
     url(
+        r'request-sms-code$',
+        views.RequestSmsCodeView.as_view(),
+        name='request-sms-code'
+    ),
+    url(
+        r'verify-sms-code$',
+        views.VerifySmsCodeView.as_view(),
+        name='verify-sms-code'
+    ),
+    url(
         r'^doctor/init$',
         views.DoctorInitView.as_view(),
         name='doctor-init'

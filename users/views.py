@@ -13,6 +13,7 @@ from users.serializers import (UserSerializer,
                                DoctorSerializer,
                                PatientSerializer,
                                InformationSerializer)
+from users.verification import send_sms_code, verify_sms_code
 from qa.serializers import QuestionSerializer, StarredQuestionSerializer
 from home.serializers import FavoritePostSerializer, FavoriteDoctorSerializer
 
@@ -47,6 +48,31 @@ class UserChangePasswordView(generics.UpdateAPIView):
 
     def get_object(self):
         return User.objects.get(id=self.request.user.id)
+
+
+class RequestSmsCodeView(APIView):
+
+    def post(self, request):
+        phone = request.data['phone']
+        result = send_sms_code(phone)
+
+        if result == status.HTTP_200_OK:
+            return Response({'success': True})
+        else:
+            # Sms code was not sent successfully for some reason
+            return Response({'error': "发送短信失败"},
+                            status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+
+class VerifySmsCodeView(APIView):
+
+    def post(self, request):
+        if verify_sms_code(request.data['code']):
+            # SMS verification passed
+            return Response({'verified': True})
+        else:
+            return Response({'error': "验证码不正确"},
+                            status=status.HTTP_400_BAD_REQUEST)
 
 
 class DoctorInitView(generics.CreateAPIView):
