@@ -1,11 +1,16 @@
+certifi==2017.4.17
+chardet==3.0.4
 Django==1.11.2
 djangorestframework==3.6.3
 elasticsearch==5.4.0
 elasticsearch-dsl==5.3.0
+idna==2.5
 olefile==0.44
 Pillow==4.1.1
+pingpp==2.2.0
+pycrypto==2.6.1
 python-dateutil==2.6.0
 pytz==2017.2
+requests==2.18.1
 six==1.10.0
 urllib3==1.21.1
-requests==2.11.0
