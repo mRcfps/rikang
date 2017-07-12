@@ -31,6 +31,7 @@ class Doctor(models.Model):
                                   max_length=3,
                                   verbose_name='科室')
     years = models.PositiveIntegerField(verbose_name='从医时间')
+    consult_price = models.FloatField(default=0, verbose_name='咨询价格')
     title = models.CharField(choices=TITLE_CHOICES, max_length=1, verbose_name='职称')
     ratings = models.PositiveIntegerField(default=5, verbose_name='评分')
     patient_num = models.PositiveIntegerField(default=0, verbose_name='已帮助患者')
