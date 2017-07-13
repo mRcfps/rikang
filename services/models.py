@@ -17,7 +17,7 @@ class Consultation(models.Model):
     )
 
     id = models.UUIDField(primary_key=True,
-                          default=uuid.uuid4,
+                          default=uuid.uuid4().hex,
                           editable=False,
                           verbose_name='咨询单号')
     doctor = models.ForeignKey('users.doctor',
