@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import MaxValueValidator
 
 
 class Post(models.Model):
@@ -65,7 +66,7 @@ class DoctorComment(models.Model):
     patient = models.ForeignKey('users.Patient', related_name='comments', verbose_name='全部评价')
     doctor = models.ForeignKey('users.Doctor', related_name='comments', verbose_name='全部评价')
     anonymous = models.BooleanField(default=False, verbose_name='匿名回答')
-    ratings = models.PositiveIntegerField(verbose_name='评分')
+    ratings = models.PositiveIntegerField(validators=[MaxValueValidator(5)], verbose_name='评分')
     created = models.DateField(auto_now_add=True, verbose_name='创建时间')
     body = models.TextField(verbose_name='评论内容')
 
