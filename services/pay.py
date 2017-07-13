@@ -34,7 +34,7 @@ def create_charge(amount, order_no, channel, client_ip):
         response = pingpp.Charge.create(
             subject="在线咨询",
             body="医生向患者提供在线咨询、答疑和诊断服务",
-            amount=amount,  # 订单总金额, 人民币单位：分（如订单总金额为 1 元，此处请填 100）
+            amount=amount*100,  # 订单总金额, 人民币单位：分（如订单总金额为 1 元，此处请填 100）
             order_no=order_no,
             currency='cny',
             channel=channel,  # 支付使用的第三方支付渠道取值，请参考：https://www.pingxx.com/api#api-c-new
@@ -44,3 +44,11 @@ def create_charge(amount, order_no, channel, client_ip):
         return response, True
     except Exception as e:
         return {'error': e}, False
+
+
+def refund(charge_id):
+    """Full refund for a charge."""
+    charge = pingpp.Charge.retrieve(charge_id)
+    ref = charge.refunds.create(description="超时未接受预约")
+
+    return ref

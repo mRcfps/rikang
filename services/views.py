@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 from django.shortcuts import get_object_or_404
 
 from rest_framework import generics, status
@@ -36,7 +38,29 @@ class PayView(APIView):
 class CancelPayView(APIView):
 
     def post(self, request):
-        consultation = get_object_or_404(Consultation, id=request.data['order_no'])
-        consultation.delete()
+        consult = get_object_or_404(Consultation, id=request.data['order_no'])
+        consult.delete()
 
         return Response({'success': True})
+
+
+class RefundView(APIView):
+
+    def post(self, request):
+        consult = get_object_or_404(Consultation, id=request.data['order_no'])
+
+        # Check if this consult is in wrong status
+        if consult.status != Consultation.PAID:
+            return Response({'error': "订单状态错误（未处在已支付等待接受预约状态）"}
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        # Check if this consult has been unaccepted for over 2 hours
+        if datetime.now() - consult.created < timedelta(hours=2):
+            return Response({'error': "尚未到可退款时间"},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        consult.status = Consultation.FINISHED
+        consult.save()
+        response = pay.refund(request.data['charge_id'])
+
+        return Response(response)

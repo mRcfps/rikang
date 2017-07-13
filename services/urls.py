@@ -18,4 +18,9 @@ urlpatterns = [
         views.CancelPayView.as_view(),
         name='cancel-pay'
     ),
+    url(
+        r'^refund$',
+        views.RefundView.as_view(),
+        name='refund'
+    ),
 ]
