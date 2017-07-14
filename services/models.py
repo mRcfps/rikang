@@ -56,6 +56,18 @@ class Consultation(models.Model):
 
 class Summary(models.Model):
 
+    # Summary types
+    DAILY = 'D'
+    WEEKLY = 'W'
+    MONTHLY = 'M'
+
+    TYPE_CHOICES = (
+        (DAILY, "每日总结"),
+        (WEEKLY, "每周总结"),
+        (MONTHLY, "每月总结"),
+    )
+
+    summary_type = models.CharField(choices=TYPE_CHOICES, max_length=1, verbose_name="总结类型")
     charges_amount = models.DecimalField(max_digits=5,
                                          decimal_places=2,
                                          verbose_name='交易金额（元）')
@@ -63,18 +75,3 @@ class Summary(models.Model):
     summary_from = models.DateTimeField(verbose_name='统计起始时间')
     summary_to = models.DateTimeField(verbose_name='统计终止时间')
     created = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
-
-
-class DailySummary(Summary):
-
-    pass
-
-
-class WeeklySummary(Summary):
-
-    pass
-
-
-class MonthlySummary(Summary):
-
-    pass
