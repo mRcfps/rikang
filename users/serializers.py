@@ -30,16 +30,17 @@ class DoctorSerializer(serializers.ModelSerializer):
         model = Doctor
         fields = ('id', 'name', 'avatar', 'department', 'years', 'consult_price',
                   'title', 'hospital', 'hospital_name', 'ratings', 'patient_num')
-        read_only_fields = ('ratings', 'patient_num')
+        read_only_fields = ('id', 'ratings', 'patient_num')
 
 
 class PatientSerializer(serializers.ModelSerializer):
 
-    phone = serializers.CharField(source='user.username')
+    phone = serializers.CharField(source='user.username', required=False)
 
     class Meta:
         model = Patient
         fields = ('id', 'avatar', 'phone', 'name', 'sex', 'age', 'medical_history')
+        read_only_fields = ('id', 'phone')
 
 
 class InformationSerializer(serializers.ModelSerializer):
