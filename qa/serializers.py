@@ -25,11 +25,11 @@ class StarredQuestionSerializer(serializers.ModelSerializer):
 
 class AnswerDisplaySerializer(serializers.ModelSerializer):
 
-    author = DoctorSerializer()
+    owner = DoctorSerializer()
 
     class Meta:
         model = Answer
-        fields = ('id', 'question', 'author', 'diagnosis', 'prescription',
+        fields = ('id', 'question', 'owner', 'diagnosis', 'prescription',
                   'course', 'advice', 'picked', 'upvotes', 'created')
         read_only_fields = ('picked', 'upvotes', 'created')
 
@@ -38,7 +38,7 @@ class AnswerEditSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Answer
-        fields = ('question', 'author', 'diagnosis', 'prescription',
+        fields = ('question', 'owner', 'diagnosis', 'prescription',
                   'course', 'advice')
 
 class QuestionImageSerializer(serializers.ModelSerializer):

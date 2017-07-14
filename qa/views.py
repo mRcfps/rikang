@@ -29,7 +29,7 @@ class NewQuestionView(generics.CreateAPIView):
     permission_classes = (IsAuthenticated, RikangKeyPermission, IsPatient)
 
     def perform_create(self, serializer):
-        serializer.save(questioner=self.request.user.patient)
+        serializer.save(owner=self.request.user.patient)
 
 
 class QuestionAddImageView(generics.CreateAPIView):
@@ -109,7 +109,7 @@ class NewAnswerView(generics.CreateAPIView):
     permission_classes = (IsAuthenticated, RikangKeyPermission, IsDoctor)
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user.doctor)
+        serializer.save(owner=self.request.user.doctor)
 
 
 class AnswersDetailView(generics.RetrieveUpdateAPIView):

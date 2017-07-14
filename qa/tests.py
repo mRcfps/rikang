@@ -30,7 +30,7 @@ class QuestionTests(APITestCase):
             Question.objects.create(
                 title='test',
                 department='NEO',
-                questioner=self.patient,
+                owner=self.patient,
                 body='text'
             )
 
@@ -64,7 +64,7 @@ class QuestionTests(APITestCase):
             'title': 'new question',
             'department': 'PNE',
             'body': 'new',
-            'questioner': self.patient.id,
+            'owner': self.patient.id,
         }
         response = self.client.post(url, data, format='json')
 
@@ -93,7 +93,7 @@ class QuestionTests(APITestCase):
         new_data = {
             'title': 'new question',
             'department': 'NEO',
-            'questioner': self.patient.id,
+            'owner': self.patient.id,
             'body': 'new question body',
         }
         response = self.client.put(url, new_data, format='json')
@@ -131,7 +131,7 @@ class AnswerTests(APITestCase):
         self.question = Question.objects.create(title='test', department='GYN', body='test')
 
         for _ in range(TEST_ANSWER_NUM):
-            Answer.objects.create(question=self.question, author=self.doctor)
+            Answer.objects.create(question=self.question, owner=self.doctor)
 
         self.client = APIClient()
         self.client.force_authenticate(user=self.user)
@@ -157,7 +157,7 @@ class AnswerTests(APITestCase):
         url = reverse('qa:answer-detail', args=[self.test_answer.id])
         new_data = {
             'question': self.question.id,
-            'author': self.doctor.id,
+            'owner': self.doctor.id,
             'diagnosis': 'new_data',
         }
         response = self.client.put(url, new_data)
@@ -168,7 +168,7 @@ class AnswerTests(APITestCase):
     def test_create_new_answer(self):
         """Ensure we can create a new answer."""
         url = reverse('qa:new-answer', args=[self.question.id])
-        data = {'question': self.question.id, 'author': self.doctor.id}
+        data = {'question': self.question.id, 'owner': self.doctor.id}
         response = self.client.post(url, data, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -204,12 +204,12 @@ class AnswerCommentTests(APITestCase):
         self.question = Question.objects.create(
             title='test',
             department='NEO',
-            questioner=self.patient,
+            owner=self.patient,
             body='test'
         )
         self.answer = Answer.objects.create(
             question=self.question,
-            author=self.doctor
+            owner=self.doctor
         )
 
         for _ in range(TEST_COMMENT_NUM):

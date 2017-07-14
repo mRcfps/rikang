@@ -59,7 +59,7 @@ class Answer(models.Model):
         verbose_name_plural = verbose_name
 
     def __str__(self):
-        return '{}的回答'.format(self.author.name)
+        return '{}的回答'.format(self.owner.name)
 
 
 class AnswerComment(models.Model):
