@@ -1,5 +1,3 @@
-import uuid
-
 from django.db import models
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
@@ -22,8 +20,7 @@ class Order(models.Model):
         (FINISHED, '已完成'),
     )
 
-    order_no = models.UUIDField(default=uuid.uuid4().hex,
-                                editable=False,
+    order_no = models.UUIDField(editable=False,
                                 verbose_name='订单编号')
     cost = models.DecimalField(max_digits=5, decimal_places=2, verbose_name='费用')
     status = models.CharField(choices=STATUS_CHOICES,
@@ -43,9 +40,7 @@ class Order(models.Model):
 
 class Consultation(models.Model):
 
-    id = models.UUIDField(primary_key=True,
-                          default=uuid.uuid4().hex,
-                          verbose_name='咨询编号')
+    id = models.UUIDField(primary_key=True, editable=False, verbose_name='咨询编号')
     doctor = models.ForeignKey('users.doctor',
                                related_name='consultations',
                                verbose_name='医生')

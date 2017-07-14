@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime, timedelta
 
 from django.shortcuts import get_object_or_404
@@ -17,9 +18,11 @@ class NewOrderView(APIView):
     def post(self, request):
         try:
             if request.data['type'] == types.CONSULTATION:
-                patient = Patient.objects.get(id=request.user.id)
+                patient = Patient.objects.get(id=request.user.patient.id)
                 doctor = Doctor.objects.get(id=request.data['doctor'])
-                consult = Consultation.objects.create(patient=patient, doctor=doctor)
+                consult = Consultation.objects.create(patient=patient,
+                                                      doctor=doctor,
+                                                      id=uuid.uuid4().hex)
                 order = Order.objects.create(service_object=consult, cost=doctor.consult_price)
 
                 data = {
