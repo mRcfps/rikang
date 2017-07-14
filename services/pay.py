@@ -1,5 +1,7 @@
 import pingpp
 
+from services.types import SERVICE_NAME, SERVICE_DESCRIPTION
+
 # api_key 获取方式：登录 [Dashboard](https://dashboard.pingxx.com)->点击管理平台右上角公司名称->开发信息-> Secret Key
 API_KEY = 'sk_test_WvLCG0abD088TWrD84arP0CO'
 
@@ -25,16 +27,16 @@ pingpp.api_key = API_KEY
 # # -----END RSA PRIVATE KEY-----'''
 
 
-def create_charge(amount, order_no, channel, client_ip):
+def create_charge(service_type, cost, order_no, channel, client_ip):
     """
     Create charge object and return response from ping++
     and whether it is created successfully.
     """
     try:
         response = pingpp.Charge.create(
-            subject="在线咨询",
-            body="医生向患者提供在线咨询、答疑和诊断服务",
-            amount=amount*100,  # 订单总金额, 人民币单位：分（如订单总金额为 1 元，此处请填 100）
+            subject=SERVICE_NAME[service_type],
+            body=SERVICE_DESCRIPTION[service_type],
+            amount=float(cost)*100,  # 订单总金额, 人民币单位：分（如订单总金额为 1 元，此处请填 100）
             order_no=order_no,
             currency='cny',
             channel=channel,  # 支付使用的第三方支付渠道取值，请参考：https://www.pingxx.com/api#api-c-new

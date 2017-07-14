@@ -1,45 +1,77 @@
 from datetime import datetime, timedelta
 
 from django.shortcuts import get_object_or_404
+from django.forms.models import model_to_dict
 
-from rest_framework import generics, status
+from rest_framework import status, generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from services import pay
-from services.models import Consultation
-from services.serializers import ConsultationSerializer
+from services import pay, types
+from services.models import Order, Consultation
+from services.serializers import OrderSerializer
+from users.models import Patient, Doctor
 
 
-class CreateConsultationView(generics.CreateAPIView):
+class NewOrderView(APIView):
 
-    serializer_class = ConsultationSerializer
+    def post(self, request):
+        try:
+            if request.data['type'] == types.CONSULTATION:
+                patient = Patient.objects.get(id=request.user.id)
+                doctor = Doctor.objects.get(id=request.data['doctor'])
+                consult = Consultation.objects.create(patient=patient, doctor=doctor)
+                order = Order.objects.create(service_object=consult, cost=doctor.consult_price)
+
+                data = {
+                    'order_no': order.order_no,
+                    'cost': order.cost,
+                    'status': order.status,
+                    'type': types.CONSULTATION,
+                    'doctor': doctor.id,
+                    'patient': patient.id,
+                    'created': order.created,
+                }
+
+                return Response(data, status=status.HTTP_201_CREATED)
+            else:
+                return Response({'error': "不存在的服务类型"}, status=status.HTTP_400_BAD_REQUEST)
+        except KeyError:
+            return Response({'error': "所选择的服务类型缺失必要字段"},
+                            status=status.HTTP_400_BAD_REQUEST)
 
 
 class PayView(APIView):
 
     def post(self, request):
         response, created = pay.create_charge(
-            amount=request.data['amount'],
+            service_type=request.data['type'],
+            cost=request.data['cost'],
             order_no=request.data['order_no'],
             channel=request.data['channel'],
             client_ip=request.data['client_ip']
         )
 
         if created:
-            consultation = Consultation.objects.get(id=request.data['order_no'])
-            consultation.status = Consultation.PAID
-            consultation.save()
+            order = get_object_or_404(Order, order_no=request.data['order_no'])
+            order.status = Order.PAID
+            order.save()
             return Response(response)
         else:
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
 
-class CancelPayView(APIView):
+class CancelView(APIView):
 
     def post(self, request):
-        consult = get_object_or_404(Consultation, id=request.data['order_no'])
-        consult.delete()
+        order = get_object_or_404(Order, order_no=request.data['order_no'])
+
+        if order.status != Order.UNPAID:
+            return Response({'error': "无法取消订单"},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        order.service_object.delete()
+        order.delete()
 
         return Response({'success': True})
 
@@ -47,20 +79,20 @@ class CancelPayView(APIView):
 class RefundView(APIView):
 
     def post(self, request):
-        consult = get_object_or_404(Consultation, id=request.data['order_no'])
+        order = get_object_or_404(Order, order_no=request.data['order_no'])
 
-        # Check if this consult is in wrong status
-        if consult.status != Consultation.PAID:
-            return Response({'error': "订单状态错误（未处在已支付等待接受预约状态）"}
+        # Check if this order is in wrong status
+        if order.status != Order.PAID:
+            return Response({'error': "订单状态错误（未处在已支付等待接受预约状态）"},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        # Check if this consult has been unaccepted for over 2 hours
-        if datetime.now() - consult.created < timedelta(hours=2):
+        # Check if this order has been unaccepted for over 2 hours
+        if datetime.now() - order.created < timedelta(hours=2):
             return Response({'error': "尚未到可退款时间"},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        consult.status = Consultation.FINISHED
-        consult.save()
+        order.status = Order.REFUND
+        order.save()
         response = pay.refund(request.data['charge_id'])
 
         return Response(response)

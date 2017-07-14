@@ -4,9 +4,9 @@ from services import views
 
 urlpatterns = [
     url(
-        r'^create-consult$',
-        views.CreateConsultationView.as_view(),
-        name='create-consult'
+        r'^new-order$',
+        views.NewOrderView.as_view(),
+        name='new-order'
     ),
     url(
         r'^pay$',
@@ -15,8 +15,8 @@ urlpatterns = [
     ),
     url(
         r'^cancel$',
-        views.CancelPayView.as_view(),
-        name='cancel-pay'
+        views.CancelView.as_view(),
+        name='cancel'
     ),
     url(
         r'^refund$',
