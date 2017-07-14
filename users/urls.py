@@ -93,4 +93,11 @@ urlpatterns = [
         views.PatientFavPostsView.as_view(),
         name='patient-fav-posts'
     ),
+
+    # `GET` /users/patient/services/
+    url(
+        r'^patient/services/$',
+        views.PatientServicesView.as_view(),
+        name='patient-services'
+    ),
 ]

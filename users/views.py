@@ -17,6 +17,7 @@ from users.permissions import RikangKeyPermission, IsDoctor, IsPatient
 from users.verification import send_sms_code, verify_sms_code
 from qa.serializers import QuestionSerializer, StarredQuestionSerializer
 from home.serializers import FavoritePostSerializer, FavoriteDoctorSerializer
+from services.serializers import ConsultationOrderSerializer
 
 
 class UserLoginView(APIView):
@@ -163,3 +164,14 @@ class PatientFavPostsView(generics.ListAPIView):
     def get_queryset(self):
         patient = Patient.objects.get(user=self.request.user)
         return patient.favorite_posts.all()
+
+
+class PatientServicesView(generics.ListAPIView):
+
+    serializer_class = ConsultationOrderSerializer
+    permission_classes = (IsAuthenticated, RikangKeyPermission, IsPatient)
+    pagination_class = None
+
+    def get_queryset(self):
+        patient = Patient.objects.get(user=self.request.user)
+        return patient.orders.all()
