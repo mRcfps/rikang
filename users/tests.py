@@ -161,10 +161,7 @@ class PatientTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # update profile
-        data = {
-            'user': 1,
-            'name': 'test',
-        }
+        data = {'name': 'new_name'}
         response = self.client.put(url, data, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
