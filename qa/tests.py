@@ -152,6 +152,19 @@ class AnswerTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+    def test_update_answer(self):
+        """Ensure we can update an answer by id."""
+        url = reverse('qa:answer-detail', args=[self.test_answer.id])
+        new_data = {
+            'question': self.question.id,
+            'author': self.doctor.id,
+            'diagnosis': 'new_data',
+        }
+        response = self.client.put(url, new_data)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['diagnosis'], new_data['diagnosis'])
+
     def test_create_new_answer(self):
         """Ensure we can create a new answer."""
         url = reverse('qa:new-answer', args=[self.question.id])
