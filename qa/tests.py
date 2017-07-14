@@ -23,8 +23,14 @@ class QuestionTests(APITestCase):
 
     def setUp(self):
         """Initialize several questions to play with."""
-        self.user = User.objects.create_user(username='test', password='test')
-        self.patient = Patient.objects.create(user=self.user)
+        self.doctor_user = User.objects.create_user(username='doctor', password='test')
+        self.doctor = Doctor.objects.create(user=self.doctor_user,
+                                            name='test',
+                                            department='GYN',
+                                            years=20,
+                                            title='C')
+        self.patient_user = User.objects.create_user(username='patient', password='test')
+        self.patient = Patient.objects.create(user=self.patient_user)
 
         for _ in range(TEST_QUESTION_NUM):
             Question.objects.create(
@@ -35,7 +41,7 @@ class QuestionTests(APITestCase):
             )
 
         self.client = APIClient()
-        self.client.force_authenticate(user=self.user)
+        self.client.force_authenticate(user=self.patient_user)
         self.test_question = Question.objects.first()
 
     def test_get_question_list(self):
@@ -110,6 +116,17 @@ class QuestionTests(APITestCase):
         self.assertNotEqual(Question.objects.first().stars, 0)
         self.assertNotEqual(self.patient.starred_questions.count(), 0)
 
+    def test_pick_an_answer_for_a_question(self):
+        """Ensure we can pick a best answer to get the question solved."""
+        answer = Answer.objects.create(owner=self.doctor, question=self.test_question)
+        url = reverse('qa:pick-answer', args=[self.test_question.id])
+        data = {'pick': answer.id}
+        response = self.client.post(url, data)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(Answer.objects.first().picked, True)
+        self.assertEqual(Question.objects.first().solved, True)
+
     def test_get_all_starred_questions(self):
         """Ensure we can get all of our starred questions."""
         for question in Question.objects.all():
@@ -126,15 +143,21 @@ class AnswerTests(APITestCase):
     """Test suite for the answer model."""
 
     def setUp(self):
-        self.user = User.objects.create_user(username='test', password='test')
-        self.doctor = Doctor.objects.create(user=self.user, name='test', department='GYN', years=20, title='C')
-        self.question = Question.objects.create(title='test', department='GYN', body='test')
+        self.doctor_user = User.objects.create_user(username='doctor', password='test')
+        self.doctor = Doctor.objects.create(user=self.doctor_user,
+                                            name='test',
+                                            department='GYN',
+                                            years=20,
+                                            title='C')
+        self.patient_user = User.objects.create_user(username='patient', password='test')
+        self.patient = Patient.objects.create(user=self.patient_user)
+        self.question = Question.objects.create(owner=self.patient, title='test', department='GYN', body='test')
 
         for _ in range(TEST_ANSWER_NUM):
             Answer.objects.create(question=self.question, owner=self.doctor)
 
         self.client = APIClient()
-        self.client.force_authenticate(user=self.user)
+        self.client.force_authenticate(user=self.doctor_user)
         self.test_answer = Answer.objects.first()
 
     def test_get_answer_list(self):
