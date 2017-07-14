@@ -55,10 +55,7 @@ class PayView(APIView):
         )
 
         if created:
-            order = get_object_or_404(Order, order_no=request.data['order_no'])
-            order.status = Order.PAID
-            order.save()
-            return Response(response)
+            return Response(response, status=status.HTTP_200_OK)
         else:
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
