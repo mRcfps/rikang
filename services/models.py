@@ -52,3 +52,29 @@ class Consultation(models.Model):
     class Meta:
         verbose_name = '在线咨询'
         verbose_name_plural = verbose_name
+
+
+class Summary(models.Model):
+
+    charges_amount = models.DecimalField(max_digits=5,
+                                         decimal_places=2,
+                                         verbose_name='交易金额（元）')
+    charges_count = models.PositiveIntegerField(verbose_name='交易量（笔）')
+    summary_from = models.DateTimeField(verbose_name='统计起始时间')
+    summary_to = models.DateTimeField(verbose_name='统计终止时间')
+    created = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
+
+
+class DailySummary(Summary):
+
+    pass
+
+
+class WeeklySummary(Summary):
+
+    pass
+
+
+class MonthlySummary(Summary):
+
+    pass
