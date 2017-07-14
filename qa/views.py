@@ -64,7 +64,8 @@ class QuestionStarView(APIView):
                                                                           question=question)
 
         # Ensure a question can only be starred once by one user
-        if not created:
+        # where a StarredQuestion object has just been created
+        if created:
             question.stars += 1
             question.save()
 
