@@ -22,12 +22,13 @@ class Order(models.Model):
 
     order_no = models.UUIDField(editable=False,
                                 verbose_name='订单编号')
-    cost = models.DecimalField(max_digits=5, decimal_places=2, verbose_name='费用')
+    cost = models.DecimalField(max_digits=5, decimal_places=2, editable=False, verbose_name='费用')
     status = models.CharField(choices=STATUS_CHOICES,
                               max_length=1,
                               default=UNPAID,
+                              editable=False,
                               verbose_name='订单状态')
-    created = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
+    created = models.DateTimeField(auto_now_add=True, editable=False, verbose_name='创建时间')
     service_type = models.ForeignKey(ContentType,
                                      on_delete=models.CASCADE,
                                      verbose_name='服务类型')
