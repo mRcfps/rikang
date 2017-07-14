@@ -9,7 +9,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from services import pay, types, events
-from services.models import Order, Consultation
+from services.models import Order, Consultation, Summary
 from users.models import Patient, Doctor
 
 
@@ -116,6 +116,15 @@ class WebhooksView(APIView):
             order = Order.objects.get(order_no=event_obj['order_no'])
             order.status = Order.REFUND
             order.save()
+            return Response(status=status.HTTP_200_OK)
+        elif request.data['type'].startswith('summary'):
+            Summary.objects.create(
+                summary_type=request.data['type'],
+                charges_amount=event_obj['charges_amount'],
+                charges_count=event_obj['charges_count'],
+                summary_from=datetime.fromtimestamp(event_obj['summary_from']),
+                summary_to=datetime.fromtimestamp(event_obj['summary_to'])
+            )
             return Response(status=status.HTTP_200_OK)
         else:
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
