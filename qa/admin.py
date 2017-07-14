@@ -5,7 +5,7 @@ from .models import Question, Answer, AnswerComment
 
 class QuestionAdmin(admin.ModelAdmin):
 
-    list_display = ('id', 'title', 'department', 'questioner',
+    list_display = ('id', 'title', 'department', 'owner',
                     'solved', 'stars', 'updated', 'created')
     list_filter = ('department', 'solved', 'stars', 'created')
     search_fields = ('title', 'department')

@@ -14,7 +14,7 @@ class Question(models.Model):
         max_length=3,
         verbose_name='科室'
     )
-    questioner = models.ForeignKey(Patient, related_name='questions', null=True, verbose_name='提问者')
+    owner = models.ForeignKey(Patient, related_name='questions', null=True, verbose_name='提问者')
     body = models.TextField(verbose_name='内容')
     solved = models.BooleanField(default=False, verbose_name='已解决')
     stars = models.IntegerField(default=0, verbose_name='关注人数')
@@ -43,7 +43,7 @@ class Answer(models.Model):
     question = models.ForeignKey(Question,
                                  related_name='answers',
                                  verbose_name='问题')
-    author = models.ForeignKey(Doctor,
+    owner = models.ForeignKey(Doctor,
                                related_name='answers',
                                verbose_name='作者')
     diagnosis = models.CharField(blank=True, max_length=100, verbose_name='疾病预测')
