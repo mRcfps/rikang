@@ -7,13 +7,17 @@ from django.forms.models import model_to_dict
 from rest_framework import status, generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 
 from services import pay, types, events
 from services.models import Order, Consultation, Summary
 from users.models import Patient, Doctor
+from users.permissions import IsPatient, IsDoctor, RikangKeyPermission, IsOwnerOrReadOnly
 
 
 class NewOrderView(APIView):
+
+    permission_classes = (IsAuthenticated, RikangKeyPermission, IsPatient)
 
     def post(self, request):
         try:
@@ -23,7 +27,9 @@ class NewOrderView(APIView):
                 consult = Consultation.objects.create(patient=patient,
                                                       doctor=doctor,
                                                       id=uuid.uuid4().hex)
-                order = Order.objects.create(service_object=consult, cost=doctor.consult_price)
+                order = Order.objects.create(owner=request.user.patient,
+                                             service_object=consult,
+                                             cost=doctor.consult_price)
 
                 data = {
                     'order_no': order.order_no,
@@ -45,6 +51,8 @@ class NewOrderView(APIView):
 
 class PayView(APIView):
 
+    permission_classes = (IsAuthenticated, RikangKeyPermission, IsOwnerOrReadOnly)
+
     def post(self, request):
         response, created = pay.create_charge(
             service_type=request.data['type'],
@@ -62,6 +70,8 @@ class PayView(APIView):
 
 class CancelView(APIView):
 
+    permission_classes = (IsAuthenticated, RikangKeyPermission, IsOwnerOrReadOnly)
+
     def post(self, request):
         order = get_object_or_404(Order, order_no=request.data['order_no'])
 
@@ -76,6 +86,8 @@ class CancelView(APIView):
 
 
 class RefundView(APIView):
+
+    permission_classes = (IsAuthenticated, RikangKeyPermission, IsOwnerOrReadOnly)
 
     def post(self, request):
         order = get_object_or_404(Order, order_no=request.data['order_no'])
