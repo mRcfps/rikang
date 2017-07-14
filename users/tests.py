@@ -144,15 +144,9 @@ class PatientTests(APITestCase):
     def setUp(self):
         """Initialize a patient to play with."""
         self.user = User.objects.create_user(username='patient', password='patient')
+        self.patient = Patient.objects.create(user=self.user)
         self.client = APIClient()
-
-        # include appropriate credentials on all requests
-        response = self.client.post(
-            reverse('users:login'),
-            {'username': 'patient', 'password': 'patient'},
-            format='json'
-        )
-        self.client.credentials(HTTP_AUTHORIZATION='Token ' + response.data['token'])
+        self.client.force_authenticate(user=self.user)
 
     def test_get_and_update_patient_profile(self):
         """Ensure we can get and update patient's profile."""
