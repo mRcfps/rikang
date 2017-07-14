@@ -94,7 +94,7 @@ class HospitalTests(APITestCase):
         self.client.force_authenticate(user=self.user)
         self.test_hospital = Hospital.objects.first()
 
-    def test_get_Hospital_list(self):
+    def test_get_hospital_list(self):
         """Ensure we can get a list of hospitals."""
         url = reverse('home:hospital-list')
         response = self.client.get(url)
@@ -105,7 +105,7 @@ class HospitalTests(APITestCase):
         # Test if pagination works
         self.assertNotEqual(response.data['next'], None)
 
-    def test_get_Hospital_by_id(self):
+    def test_get_hospital_by_id(self):
         """Ensure we can get one single hospital by id."""
         url = reverse('home:hospital-detail', args=[self.test_hospital.id])
         response = self.client.get(url)
@@ -159,6 +159,13 @@ class DoctorTests(APITestCase):
     def test_get_doctor_info(self):
         """Ensure we can get a doctor's info by id."""
         url = reverse('home:doctor-info', args=[self.test_doctor.id])
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_get_doctor_answers(self):
+        """Ensure we can get all answers of this doctor."""
+        url = reverse('home:doctor-answers', args=[self.test_doctor.id])
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
