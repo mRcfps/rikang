@@ -8,7 +8,7 @@ from rest_framework import status, generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from services import pay, types
+from services import pay, types, events
 from services.models import Order, Consultation
 from users.models import Patient, Doctor
 
@@ -101,3 +101,24 @@ class RefundView(APIView):
             return Response(response)
         else:
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
+
+class WebhooksView(APIView):
+
+    authentication_classes = []
+    permission_classes = []
+
+    def post(self, request):
+        event_obj = request.data['data']['object']
+        if request.data['type'] == events.CHARGE_SUCCEEDED:
+            order = Order.objects.get(order_no=event_obj['order_no'])
+            order.status = Order.PAID
+            order.save()
+            return Response(status=status.HTTP_200_OK)
+        elif request.data['type'] == events.REFUND_SUCCEEDED:
+            order = Order.objects.get(order_no=event_obj['order_no'])
+            order.status = Order.REFUND
+            order.save()
+            return Response(status=status.HTTP_200_OK)
+        else:
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)

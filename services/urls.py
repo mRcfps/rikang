@@ -23,4 +23,9 @@ urlpatterns = [
         views.RefundView.as_view(),
         name='refund'
     ),
+    url(
+        r'^webhooks$',
+        views.WebhooksView.as_view(),
+        name='webhooks'
+    ),
 ]
