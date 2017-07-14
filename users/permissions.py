@@ -9,8 +9,6 @@ class RikangKeyPermission(permissions.BasePermission):
     """Global permission check for unknown requests."""
 
     def has_permission(self, request, view):
-        if settings.DEBUG:
-            return True
-        else:
-            # production environment
-            return request.META.get('HTTP_RIKANG_KEY') == RIKANG_KEY
+        return True
+        # uncomment this in production environment!
+        # return request.META.get('HTTP_RIKANG_KEY') == RIKANG_KEY
