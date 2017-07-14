@@ -1,3 +1,7 @@
+"""
+Descriptive service type codes, for code readability.
+"""
+
 # Online consultation between a doctor and a patient
 CONSULTATION = 'C'
 
