@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 
+from services import events
+
 
 class Order(models.Model):
 
@@ -56,18 +58,13 @@ class Consultation(models.Model):
 
 class Summary(models.Model):
 
-    # Summary types
-    DAILY = 'D'
-    WEEKLY = 'W'
-    MONTHLY = 'M'
-
     TYPE_CHOICES = (
-        (DAILY, "每日总结"),
-        (WEEKLY, "每周总结"),
-        (MONTHLY, "每月总结"),
+        (events.DAILY_SUMMARY, "每日总结"),
+        (events.WEEKLY_SUMMARY, "每周总结"),
+        (events.MONTHLY_SUMMARY, "每月总结"),
     )
 
-    summary_type = models.CharField(choices=TYPE_CHOICES, max_length=1, verbose_name="总结类型")
+    summary_type = models.CharField(choices=TYPE_CHOICES, max_length=20, verbose_name="总结类型")
     charges_amount = models.DecimalField(max_digits=5,
                                          decimal_places=2,
                                          verbose_name='交易金额（元）')
