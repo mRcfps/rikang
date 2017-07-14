@@ -39,7 +39,9 @@ class OrderTests(APITestCase):
             doctor=self.doctor,
             id=uuid.uuid4().hex
         )
-        self.order = Order.objects.create(service_object=self.consult, cost=self.doctor.consult_price)
+        self.order = Order.objects.create(owner=self.patient,
+                                          service_object=self.consult,
+                                          cost=self.doctor.consult_price)
 
     def test_create_new_order(self):
         """Ensure we can create a new consult order."""
@@ -80,7 +82,6 @@ class OrderTests(APITestCase):
         response = self.client.post(url, data)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(Order.objects.get().status, Order.PAID)
 
     def test_cancel_order(self):
         """Ensure we can cancel an order."""
