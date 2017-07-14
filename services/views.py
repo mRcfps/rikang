@@ -9,7 +9,6 @@ from rest_framework.response import Response
 
 from services import pay, types
 from services.models import Order, Consultation
-from services.serializers import OrderSerializer
 from users.models import Patient, Doctor
 
 
