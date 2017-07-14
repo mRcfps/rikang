@@ -52,6 +52,13 @@ urlpatterns = [
         name='answer-list'
     ),
 
+    # `POST` /qa/questions/{question_id}/pick-answer
+    url(
+        r'^questions/(?P<pk>\d+)/pick-answer$',
+        views.PickAnswerView.as_view(),
+        name='pick-answer'
+    ),
+
     # `POST` /qa/questions/{question_id}/answers/new
     url(
         r'^questions/(?P<pk>\d+)/answers/new$',

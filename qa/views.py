@@ -79,6 +79,22 @@ class QuestionStarView(APIView):
         return Response({'id': int(pk), 'starred': True})
 
 
+class PickAnswerView(APIView):
+
+    def post(self, request, pk):
+        question = Question.objects.get(id=pk)
+        if question.owner == request.user.patient:
+            question.solved = True
+            question.save()
+            answer = Answer.objects.get(id=request.data['pick'])
+            answer.picked = True
+            answer.save()
+            return Response({'picked': True})
+        else:
+            # this request does not come from owner of this question
+            return Response({'error': "无权执行此操作"}, status=status.HTTP_403_UNAUTHORIZED)
+
+
 class AnswersListView(generics.ListAPIView):
 
     serializer_class = AnswerDisplaySerializer
