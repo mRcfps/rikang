@@ -24,6 +24,7 @@ class Order(models.Model):
 
     order_no = models.UUIDField(editable=False,
                                 verbose_name='订单编号')
+    owner = models.ForeignKey('users.patient', related_name='orders', verbose_name='顾客')
     cost = models.DecimalField(max_digits=5, decimal_places=2, editable=False, verbose_name='费用')
     status = models.CharField(choices=STATUS_CHOICES,
                               max_length=1,
