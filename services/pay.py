@@ -45,12 +45,16 @@ def create_charge(service_type, cost, order_no, channel, client_ip):
         )
         return response, True
     except Exception as e:
-        return {'error': e}, False
+        return {'error': e.args[0]}, False
 
 
 def refund(charge_id):
-    """Full refund for a charge."""
-    charge = pingpp.Charge.retrieve(charge_id)
-    ref = charge.refunds.create(description="超时未接受预约")
-
-    return ref
+    """Full refund for a charge and return response from ping++
+    and whether refund is made.
+    """
+    try:
+        charge = pingpp.Charge.retrieve(charge_id)
+        ref = charge.refunds.create(description="超时未接受预约")
+        return ref, True
+    except Exception as e:
+        return {'error': e.args[0]}, False

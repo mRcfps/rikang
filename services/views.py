@@ -93,8 +93,11 @@ class RefundView(APIView):
             return Response({'error': "尚未到可退款时间"},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        order.status = Order.REFUND
-        order.save()
-        response = pay.refund(request.data['charge_id'])
+        response, success = pay.refund(request.data['charge_id'])
 
-        return Response(response)
+        if success:
+            order.status = Order.REFUND
+            order.save()
+            return Response(response)
+        else:
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
