@@ -47,4 +47,4 @@ class InformationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Information
-        exclude = ('id',)
+        exclude = ('id', 'doctor')
