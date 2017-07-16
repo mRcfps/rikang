@@ -79,7 +79,7 @@ class VerifySmsCodeView(APIView):
 
     def post(self, request):
         phone = get_object_or_404(Phone, number=request.data['phone'])
-        if phone.code == request.data['code']:
+        if phone.code == int(request.data['code']):
             # SMS verification passed
             phone.verified = True
             phone.save()
