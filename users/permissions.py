@@ -1,8 +1,9 @@
 from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
 
 from rest_framework import permissions
 
-from users.models import Patient, Doctor
+from users.models import Phone, Patient, Doctor
 
 RIKANG_KEY = 'powerformer'
 
@@ -44,3 +45,15 @@ class IsDoctor(permissions.BasePermission):
 
     def has_permission(self, request, view):
         return Doctor.objects.filter(user=request.user).exists()
+
+
+class IsSMSVerified(permissions.BasePermission):
+    """Permission check if a user has passed sms verification."""
+
+    def has_permission(self, request, view):
+        try:
+            phone = Phone.objects.get(number=request.data['phone'])
+            return phone.verified
+        except ObjectDoesNotExist:
+            # this phone number has not requested sms code
+            return False

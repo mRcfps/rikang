@@ -1,3 +1,6 @@
+import random
+
+from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
 
 from rest_framework.authentication import TokenAuthentication
@@ -8,13 +11,13 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import generics, status
 
-from users.models import Doctor, Patient, Information
+from users.models import Phone, Doctor, Patient, Information
 from users.serializers import (UserSerializer,
                                DoctorSerializer,
                                PatientSerializer,
                                InformationSerializer)
-from users.permissions import RikangKeyPermission, IsDoctor, IsPatient
-from users.verification import send_sms_code, verify_sms_code
+from users.permissions import RikangKeyPermission, IsDoctor, IsPatient, IsSMSVerified
+from users.sms import send_sms_code
 from qa.serializers import QuestionSerializer, StarredQuestionSerializer
 from home.serializers import FavoritePostSerializer, FavoriteDoctorSerializer
 from services.serializers import ConsultationOrderSerializer
@@ -40,7 +43,7 @@ class UserRegistrationView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     authentication_classes = []
-    permission_classes = (RikangKeyPermission,)
+    permission_classes = (RikangKeyPermission, IsSMSVerified)
 
 
 class UserChangePasswordView(generics.UpdateAPIView):
@@ -58,8 +61,8 @@ class RequestSmsCodeView(APIView):
     permission_classes = (RikangKeyPermission,)
 
     def post(self, request):
-        phone = request.data['phone']
-        result = send_sms_code(phone)
+        phone, created = Phone.objects.get_or_create(number=request.data['phone'])
+        result = send_sms_code(phone.number, phone.code)
 
         if result == status.HTTP_200_OK:
             return Response({'success': True})
@@ -75,10 +78,16 @@ class VerifySmsCodeView(APIView):
     permission_classes = (RikangKeyPermission,)
 
     def post(self, request):
-        if verify_sms_code(request.data['code']):
+        phone = get_object_or_404(Phone, number=request.data['phone'])
+        if phone.code == request.data['code']:
             # SMS verification passed
+            phone.verified = True
+            phone.save()
             return Response({'verified': True})
         else:
+            # reset the code
+            phone.code = random.randint(1001, 9999)
+            phone.save()
             return Response({'error': "验证码不正确"},
                             status=status.HTTP_400_BAD_REQUEST)
 

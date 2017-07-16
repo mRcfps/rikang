@@ -1,8 +1,21 @@
+import random
+
 from django.db import models
 from django.contrib.auth.models import User
 
 import departments
 from home.models import Hospital, Post
+
+
+class Phone(models.Model):
+
+    number = models.CharField(max_length=11, verbose_name='手机号码')
+    verfied = models.BooleanField(default=False, verbose_name='是否通过验证')
+    code = models.IntegerField(default=random.randrange(1001, 9999), verbose_name='验证码')
+
+    class Meta:
+        verbose_name = '手机号'
+        verbose_name_plural = verbose_name
 
 
 class Doctor(models.Model):
