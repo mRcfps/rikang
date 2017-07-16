@@ -85,9 +85,6 @@ class VerifySmsCodeView(APIView):
             phone.save()
             return Response({'verified': True})
         else:
-            # reset the code
-            phone.code = random.randint(1001, 9999)
-            phone.save()
             return Response({'error': "验证码不正确"},
                             status=status.HTTP_400_BAD_REQUEST)
 

@@ -52,7 +52,7 @@ class IsSMSVerified(permissions.BasePermission):
 
     def has_permission(self, request, view):
         try:
-            phone = Phone.objects.get(number=request.data['phone'])
+            phone = Phone.objects.get(number=request.data['username'])
             return phone.verified
         except ObjectDoesNotExist:
             # this phone number has not requested sms code
