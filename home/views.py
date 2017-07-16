@@ -65,10 +65,23 @@ class HospitalDoctorsView(generics.ListAPIView):
 
 
 class DoctorListView(generics.ListAPIView):
-    """GET a collection of doctors。"""
+    """GET a collection of doctors."""
 
-    queryset = Doctor.objects.all()
     serializer_class = DoctorSerializer
+
+    def get_queryset(self):
+        dep = self.request.query_params.get('dep', None)
+        order = self.request.query_params.get('order', None)
+        results = Doctor.objects.all()
+
+        if dep is not None:
+            # filter against given department
+            results = results.filter(department=dep)
+
+        if order is not None:
+            results = results.order_by(order)
+
+        return results
 
 
 class DoctorDetailView(generics.RetrieveAPIView):
