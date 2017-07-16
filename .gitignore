@@ -4,4 +4,10 @@ media/
 __pycache__
 *.pyc
 db.sqlite3
+
+# Api keys
 SMS_API_KEY
+
+# Elasticsearch
+elasticsearch/data/
+elasticsearch/logs/
