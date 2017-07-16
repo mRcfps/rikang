@@ -116,7 +116,6 @@ class DoctorInfoView(generics.RetrieveUpdateAPIView):
 class PatientProfileView(generics.RetrieveUpdateAPIView):
 
     serializer_class = PatientSerializer
-    permission_classes = (IsAuthenticated, RikangKeyPermission, IsPatient)
 
     def get_object(self):
         profile, created = Patient.objects.get_or_create(user=self.request.user)
