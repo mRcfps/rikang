@@ -231,8 +231,6 @@ class DoctorCommentTests(APITestCase):
         """Ensure we can add a new comment to a doctor."""
         url = reverse('home:doctor-new-comment', args=[self.doctor.id])
         data = {
-            'patient': self.patient.id,
-            'doctor': self.doctor.id,
             'ratings': 5,
             'body': 'test',
         }

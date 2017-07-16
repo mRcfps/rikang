@@ -99,4 +99,4 @@ class NewCommentDisplaySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = DoctorComment
-        fields = ('anonymous', 'ratings', 'body')
+        fields = ('anonymous', 'order_no', 'ratings', 'body')
