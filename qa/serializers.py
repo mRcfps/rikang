@@ -30,8 +30,8 @@ class AnswerDisplaySerializer(serializers.ModelSerializer):
     class Meta:
         model = Answer
         fields = ('id', 'question', 'owner', 'diagnosis', 'prescription',
-                  'course', 'advice', 'picked', 'upvotes', 'created')
-        read_only_fields = ('picked', 'upvotes', 'created')
+                  'course', 'advice', 'picked', 'upvotes', 'comment_num', 'created')
+        read_only_fields = ('picked', 'upvotes', 'comment_num', 'created')
 
 
 class AnswerEditSerializer(serializers.ModelSerializer):

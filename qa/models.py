@@ -62,6 +62,10 @@ class Answer(models.Model):
     def __str__(self):
         return '{}的回答'.format(self.owner.name)
 
+    @property
+    def comment_num(self):
+        return self.comments.count()
+
 
 class AnswerComment(models.Model):
 
