@@ -28,6 +28,7 @@ class Question(models.Model):
     def __str__(self):
         return self.title
 
+    @property
     def answer_num(self):
         return self.answers.count()
 

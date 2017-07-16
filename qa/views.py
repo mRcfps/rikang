@@ -5,6 +5,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
+from elasticsearch_dsl import Search
+
 from qa.models import Question, Answer, QuestionImage
 from qa.serializers import (QuestionSerializer,
                             QuestionImageSerializer,
@@ -18,8 +20,30 @@ from users.permissions import RikangKeyPermission, IsOwnerOrReadOnly, IsDoctor, 
 
 class QuestionListView(generics.ListAPIView):
 
-    queryset = Question.objects.all()
     serializer_class = QuestionSerializer
+
+    def get_queryset(self):
+        search_keyword = self.request.query_params.get('search', None)
+        department = self.request.query_params.get('dep', None)
+        search = Search(index='rikang_qa')
+
+        if search_keyword is not None:
+            # full text search using keywords provided by user
+            search = search.query('match', title=search_keyword)
+
+        if department is not None:
+            # filter against departments
+            search = search.query('match', department=department)
+
+        results = search.execute()
+
+        # Collect ids from search hits and get queryset with them
+        # CAUTION: VERY INEFFICIENT!!!
+        results_ids = set()
+        for result in results.hits:
+            results_ids.add(int(result.meta['id']))
+
+        return Question.objects.filter(id__in=results_ids)
 
 
 class NewQuestionView(generics.CreateAPIView):
