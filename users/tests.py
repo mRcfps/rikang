@@ -5,8 +5,11 @@ from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
 from rest_framework.authtoken.models import Token
 
-from users.models import Doctor, Patient, Information
+from users.models import Phone, Doctor, Patient, Information
 from home.models import Hospital
+
+# Enter your phone number here to test sms verification
+TEST_PHONE_NUMBER = '18321025181'
 
 
 class UserTests(APITestCase):
@@ -17,13 +20,32 @@ class UserTests(APITestCase):
         self.client = APIClient()
         self.user = User.objects.create_user(username='test', password='test')
 
+    def test_request_sms_code(self):
+        """Ensure we can get sms code."""
+        url = reverse('users:request-sms-code')
+        data = {'phone': TEST_PHONE_NUMBER}
+        response = self.client.post(url, data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
     def test_register(self):
-        """Ensure we can register an account."""
+        """Ensure we can register an account with a verified phone number."""
+        # Initialize a verified phone instance
+        phone = Phone.objects.create(number=TEST_PHONE_NUMBER, verified=True)
+
         url = reverse('users:register')
-        data = {'username': 'test2', 'password': 'test2'}
+        data = {'username': TEST_PHONE_NUMBER, 'password': 'test'}
         response = self.client.post(url, data, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_block_unverified_register_requests(self):
+        """Ensure requests with phone numbers not verified can't register an account."""
+        url = reverse('users:register')
+        data = {'username': 'unverified phone', 'password': 'test'}
+        response = self.client.post(url, data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_login(self):
         """Ensure we can login and get a token."""
@@ -126,7 +148,6 @@ class DoctorTests(APITestCase):
         """Ensure we can update doctor's info."""
         url = reverse('users:doctor-info')
         data = {
-            'doctor': 1,
             'specialty': 'test',
             'background': 'test',
             'achievements': 'test',
