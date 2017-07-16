@@ -12,6 +12,7 @@ class Phone(models.Model):
     number = models.CharField(max_length=11, verbose_name='手机号码')
     verified = models.BooleanField(default=False, verbose_name='是否通过验证')
     code = models.IntegerField(default=random.randrange(1001, 9999), verbose_name='验证码')
+    created = models.DateField(auto_now_add=True, verbose_name='注册时间')
 
     class Meta:
         verbose_name = '手机号'
@@ -51,7 +52,7 @@ class Doctor(models.Model):
     title = models.CharField(choices=TITLE_CHOICES, max_length=1, verbose_name='职称')
     ratings = models.PositiveIntegerField(default=5, verbose_name='评分')
     patient_num = models.PositiveIntegerField(default=0, verbose_name='已帮助患者')
-    created = models.DateTimeField(auto_now_add=True, verbose_name='注册时间')
+    created = models.DateField(auto_now_add=True, verbose_name='注册时间')
 
     class Meta:
         verbose_name = '医生'
@@ -88,7 +89,7 @@ class Patient(models.Model):
     sex = models.CharField(max_length=1, choices=SEX_CHOICES, default=UNKNOWN, verbose_name='性别')
     age = models.PositiveIntegerField(blank=True, null=True, verbose_name='年龄')
     medical_history = models.TextField(blank=True, null=True, verbose_name='疾病历史')
-    created = models.DateTimeField(auto_now_add=True, verbose_name='注册时间')
+    created = models.DateField(auto_now_add=True, verbose_name='注册时间')
 
     class Meta:
         verbose_name = '患者'
