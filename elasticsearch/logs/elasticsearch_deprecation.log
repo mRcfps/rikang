@@ -1,5 +1,0 @@
-[2017-07-15T10:32:47,828][WARN ][o.e.d.i.m.StringFieldMapper$TypeParser] The [string] field is deprecated, please use [text] or [keyword] instead on [name]
-[2017-07-15T10:32:47,830][WARN ][o.e.d.i.m.StringFieldMapper$TypeParser] The [string] field is deprecated, please use [text] or [keyword] instead on [description]
-[2017-07-15T10:32:47,830][WARN ][o.e.d.i.m.StringFieldMapper$TypeParser] The [string] field is deprecated, please use [text] or [keyword] instead on [category]
-[2017-07-15T10:32:47,830][WARN ][o.e.d.i.m.StringFieldMapper$TypeParser] The [string] field is deprecated, please use [text] or [keyword] instead on [tags]
-[2017-07-15T10:47:50,439][WARN ][o.e.d.r.RestRequest      ] Expected a boolean [true/false] for request parameter [pretty] but got [1]
