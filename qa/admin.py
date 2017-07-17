@@ -11,4 +11,5 @@ class QuestionAdmin(admin.ModelAdmin):
     search_fields = ('title', 'department')
 
 admin.site.register(Question, QuestionAdmin)
+admin.site.register(Answer)
 admin.site.register(AnswerComment)

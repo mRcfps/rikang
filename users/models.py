@@ -15,8 +15,11 @@ class Phone(models.Model):
     created = models.DateField(auto_now_add=True, verbose_name='注册时间')
 
     class Meta:
-        verbose_name = '手机号'
+        verbose_name = '手机号码'
         verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return self.number
 
 
 class Doctor(models.Model):
