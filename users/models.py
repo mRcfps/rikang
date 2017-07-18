@@ -66,6 +66,9 @@ class Doctor(models.Model):
     def __str__(self):
         return self.name
 
+    def order_num(self):
+        return self.consultations.count()
+
 
 class Information(models.Model):
 
