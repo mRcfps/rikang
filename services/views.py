@@ -81,7 +81,7 @@ class FinishOrderView(APIView):
             return Response({'error': "您无权操作此订单"}, status=status.HTTP_403_FORBIDDEN)
 
         if datetime.now() - consult.start < timedelta(days=1):
-            return Response({'error': "尚未到取消订单的时间"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': "尚未到结束订单的时间"}, status=status.HTTP_400_BAD_REQUEST)
 
         order.status = Order.FINISHED
         order.save()

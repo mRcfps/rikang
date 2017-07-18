@@ -19,6 +19,16 @@ urlpatterns = [
         name='cancel'
     ),
     url(
+        r'^accept-order$',
+        views.AcceptOrderView.as_view(),
+        name='accept-order'
+    ),
+    url(
+        r'^finish-order$',
+        views.FinishOrderView.as_view(),
+        name='finish-order'
+    ),
+    url(
         r'^refund$',
         views.RefundView.as_view(),
         name='refund'
