@@ -72,8 +72,13 @@ class Answer(models.Model):
 class AnswerComment(models.Model):
 
     answer = models.ForeignKey(Answer, related_name='comments', verbose_name='回答')
-    replier_type = models.ForeignKey(ContentType, null=True, blank=True, verbose_name='回答者身份')
-    replier_id = models.PositiveIntegerField(null=True, blank=True, verbose_name='回答者编号')
+    limit = models.Q(app_label='users', model='doctor') | models.Q(app_label='users', model='patient')
+    replier_type = models.ForeignKey(ContentType,
+                                     limit_choices_to=limit,
+                                     null=True,
+                                     blank=True,
+                                     verbose_name='评论者身份')
+    replier_id = models.PositiveIntegerField(null=True, blank=True, verbose_name='评论者编号')
     replier = GenericForeignKey('replier_type', 'replier_id')
     reply_to = models.ForeignKey('self',
                                  null=True,

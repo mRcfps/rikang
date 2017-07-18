@@ -32,7 +32,9 @@ class Order(models.Model):
                               editable=False,
                               verbose_name='订单状态')
     created = models.DateTimeField(auto_now_add=True, editable=False, verbose_name='创建时间')
+    limit = models.Q(app_label='services', model='consultation')
     service_type = models.ForeignKey(ContentType,
+                                     limit_choices_to=limit,
                                      on_delete=models.CASCADE,
                                      verbose_name='服务类型')
     service_object = GenericForeignKey('service_type', 'order_no')
