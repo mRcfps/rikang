@@ -63,12 +63,14 @@ class Doctor(models.Model):
     created = models.DateField(auto_now_add=True, verbose_name='注册时间')
 
     class Meta:
+        ordering = ('patient_num', 'ratings', 'years')
         verbose_name = '医生'
         verbose_name_plural = verbose_name
 
     def __str__(self):
         return self.name
 
+    @property
     def order_num(self):
         return self.consultations.count()
 
@@ -112,26 +114,32 @@ class Patient(models.Model):
 
 class StarredQuestion(models.Model):
 
-    patient = models.ForeignKey(Patient, related_name='starred_questions')
-    question = models.ForeignKey('qa.question')
+    patient = models.ForeignKey(Patient, related_name='starred_questions', verbose_name='患者')
+    question = models.ForeignKey('qa.question', verbose_name='问题')
+    created = models.DateTimeField(auto_now_add=True, verbose_name='添加时间')
 
     class Meta:
+        ordering = ('-created',)
         unique_together = ('patient', 'question')
 
 
 class FavoritePost(models.Model):
 
-    patient = models.ForeignKey(Patient, related_name='favorite_posts')
-    post = models.ForeignKey('home.post')
+    patient = models.ForeignKey(Patient, related_name='favorite_posts', verbose_name='患者')
+    post = models.ForeignKey('home.post', verbose_name='文章')
+    created = models.DateTimeField(auto_now_add=True, verbose_name='添加时间')
 
     class Meta:
+        ordering = ('-created',)
         unique_together = ('patient', 'post')
 
 
 class FavoriteDoctor(models.Model):
 
-    patient = models.ForeignKey(Patient, related_name='favorite_doctors')
-    doctor = models.ForeignKey(Doctor)
+    patient = models.ForeignKey(Patient, related_name='favorite_doctors', verbose_name='患者')
+    doctor = models.ForeignKey(Doctor, verbose_name='医生')
+    created = models.DateTimeField(auto_now_add=True, verbose_name='添加时间')
 
     class Meta:
+        ordering = ('-created',)
         unique_together = ('patient', 'doctor')

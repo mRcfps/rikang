@@ -38,6 +38,7 @@ class Order(models.Model):
     service_object = GenericForeignKey('service_type', 'order_no')
 
     class Meta:
+        ordering = ('-created',)
         verbose_name = '订单'
         verbose_name_plural = verbose_name
 
@@ -51,8 +52,10 @@ class Consultation(models.Model):
     patient = models.ForeignKey('users.patient',
                                 related_name='consulations',
                                 verbose_name='患者')
+    created = created = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
 
     class Meta:
+        ordering = ('-created',)
         verbose_name = '在线咨询'
         verbose_name_plural = verbose_name
 
@@ -73,3 +76,11 @@ class Summary(models.Model):
     summary_from = models.DateTimeField(verbose_name='统计起始时间')
     summary_to = models.DateTimeField(verbose_name='统计终止时间')
     created = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
+
+    class Meta:
+        ordering = ('-created',)
+        verbose_name = "交易总结"
+        verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return "{} ~ {} {}".format(self.summary_from, self.summary_to, self.summary_type)

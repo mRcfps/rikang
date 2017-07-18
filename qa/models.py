@@ -22,6 +22,7 @@ class Question(models.Model):
     created = models.DateField(auto_now_add=True, verbose_name='创建时间')
 
     class Meta:
+        ordering = ('stars', 'answers', '-updated')
         verbose_name = '问题'
         verbose_name_plural = verbose_name
 
@@ -56,6 +57,7 @@ class Answer(models.Model):
     created = models.DateField(auto_now_add=True, verbose_name='创建时间')
 
     class Meta:
+        ordering = ('picked', 'upvotes', '-created')
         verbose_name = '回答'
         verbose_name_plural = verbose_name
 
