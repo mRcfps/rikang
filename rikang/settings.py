@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     # 3rd-party apps
     'rest_framework',
     'rest_framework.authtoken',
+    'ckeditor',
+    'ckeditor_uploader',
 
     # rikang apps
     'home',
@@ -164,4 +166,23 @@ REST_FRAMEWORK = {
         'anon': '100/day',
         'user': '1000/day'
     }
+}
+
+# CKEditor settings
+
+CKEDITOR_UPLOAD_PATH = 'uploads/'
+
+CKEDITOR_CONFIGS = {
+    'default': {
+        'language': 'zh-CN',
+        'toolbar': 'Custom',
+        'toolbar_Custom': [
+            ['Format', 'Styles'],
+            ['Bold', 'Italic', 'Underline', 'Strike'],
+            ['FontSize', 'TextColor'],
+            ['Undo', 'Redo'],
+            ['NumberedList', 'BulletedList'],
+            ['RemoveFormat', 'Source'],
+        ]
+    },
 }

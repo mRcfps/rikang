@@ -9,6 +9,7 @@ urlpatterns = [
     url(r'^qa/', include('qa.urls', namespace='qa')),
     url(r'^services/', include('services.urls', namespace='services')),
     url(r'^admin/', admin.site.urls),
+    url(r'^ckeditor/', include('ckeditor_uploader.urls')),
 ]
 
 if settings.DEBUG:

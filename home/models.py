@@ -1,12 +1,14 @@
 from django.db import models
 from django.core.validators import MaxValueValidator
 
+from ckeditor.fields import RichTextField
+
 
 class Post(models.Model):
 
     title = models.CharField(max_length=100, verbose_name='标题')
     photo = models.ImageField(upload_to='posts/', blank=True, verbose_name='图片')
-    body = models.TextField(verbose_name='正文')
+    body = RichTextField(verbose_name='正文')
     created = models.DateField(auto_now_add=True, verbose_name='创建时间')
 
     class Meta:
