@@ -23,27 +23,32 @@ class QuestionListView(generics.ListAPIView):
     serializer_class = QuestionSerializer
 
     def get_queryset(self):
-        search_keyword = self.request.query_params.get('search', None)
         department = self.request.query_params.get('dep', None)
-        search = Search(index='rikang_qa')
+        order = self.request.query_params.get('order', None)
+        search_keyword = self.request.query_params.get('search', None)
 
-        if search_keyword is not None:
+        if search_keyword is None:
+            queryset = Question.objects.all()
+
+            if department is not None:
+                queryset = queryset.filter(department=department)
+
+            if order is not None:
+                queryset = queryset.order_by(order)
+
+            return queryset
+        else:
             # full text search using keywords provided by user
+            search = Search(index='rikang_qa')
             search = search.query('match', title=search_keyword)
+            results = search.execute()
+            queryset = list()
 
-        if department is not None:
-            # filter against departments
-            search = search.query('match', department=department)
+            for result in results.hits:
+                question = Question.objects.get(id=result.meta['id'])
+                queryset.append(question)
 
-        results = search.execute()
-
-        # Collect ids from search hits and get queryset with them
-        # CAUTION: VERY INEFFICIENT!!!
-        results_ids = set()
-        for result in results.hits:
-            results_ids.add(int(result.meta['id']))
-
-        return Question.objects.filter(id__in=results_ids)
+                return queryset
 
 
 class NewQuestionView(generics.CreateAPIView):
@@ -133,7 +138,10 @@ class NewAnswerView(generics.CreateAPIView):
     permission_classes = (IsAuthenticated, RikangKeyPermission, IsDoctor)
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user.doctor)
+        doctor = self.request.user.doctor
+        serializer.save(owner=doctor)
+        doctor.patient_num += 1
+        doctor.save()
 
 
 class AnswersDetailView(generics.RetrieveUpdateAPIView):

@@ -196,6 +196,7 @@ class AnswerTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertNotEqual(Answer.objects.count(), TEST_ANSWER_NUM)
+        self.assertNotEqual(Doctor.objects.first().patient_num, 0)
 
     def test_upvote_answer(self):
         """Ensure we can upvote an answer."""
