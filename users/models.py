@@ -8,12 +8,15 @@ import departments
 from home.models import Hospital, Post
 
 
+def random_code():
+        return random.randrange(1001, 9999)
+
+
 class Phone(models.Model):
 
     number = models.CharField(max_length=11, verbose_name='手机号码')
     verified = models.BooleanField(default=False, verbose_name='是否通过验证')
-    code = models.IntegerField(default=partial(random.randrange, 1001, 9999),
-                               verbose_name='验证码')
+    code = models.IntegerField(default=random_code, verbose_name='验证码')
     created = models.DateField(auto_now_add=True, verbose_name='注册时间')
 
     class Meta:
