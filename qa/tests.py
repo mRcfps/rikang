@@ -85,7 +85,7 @@ class QuestionTests(APITestCase):
             response = self.client.post(url, data)
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertNotEqual(Question.objects.first().images.count(), 0)
+        self.assertNotEqual(Question.objects.get(id=self.test_question.id).images.count(), 0)
 
         url = reverse('qa:question-image-list', args=[self.test_question.id])
         response = self.client.get(url)
@@ -105,7 +105,7 @@ class QuestionTests(APITestCase):
         response = self.client.put(url, new_data, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(Question.objects.first().title, new_data['title'])
+        self.assertEqual(Question.objects.get(id=self.test_question.id).title, new_data['title'])
 
     def test_star_question(self):
         """Ensure we can star a question."""
@@ -113,7 +113,7 @@ class QuestionTests(APITestCase):
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertNotEqual(Question.objects.first().stars, 0)
+        self.assertNotEqual(Question.objects.get(id=self.test_question.id).stars, 0)
         self.assertNotEqual(self.patient.starred_questions.count(), 0)
 
     def test_pick_an_answer_for_a_question(self):
@@ -125,7 +125,7 @@ class QuestionTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(Answer.objects.first().picked, True)
-        self.assertEqual(Question.objects.first().solved, True)
+        self.assertEqual(Question.objects.get(id=self.test_question.id).solved, True)
 
     def test_get_all_starred_questions(self):
         """Ensure we can get all of our starred questions."""
@@ -204,7 +204,7 @@ class AnswerTests(APITestCase):
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertNotEqual(Answer.objects.first().upvotes, 0)
+        self.assertNotEqual(Answer.objects.get(id=self.test_answer.id).upvotes, 0)
 
 
 class AnswerCommentTests(APITestCase):
