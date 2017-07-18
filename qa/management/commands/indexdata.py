@@ -4,7 +4,7 @@ import elasticsearch_dsl.connections
 from django.core.management import BaseCommand
 
 from qa.models import Question
-from qa.es_docs import ESQuestion
+from qa.search import ESQuestion
 
 
 class Command(BaseCommand):

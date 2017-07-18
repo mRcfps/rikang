@@ -1,9 +1,12 @@
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 
 import departments
 from users.models import Doctor, Patient
+from qa.search import ESQuestion
 
 
 class Question(models.Model):
@@ -32,6 +35,20 @@ class Question(models.Model):
     @property
     def answer_num(self):
         return self.answers.count()
+
+    def indexing(self):
+        esq = ESQuestion(
+            meta={'id': self.pk},
+            title=self.title,
+            department=self.department,
+            body=self.body,
+            solved=self.solved,
+            stars=self.stars,
+            answer_num=self.answer_num,
+            created=self.created
+        )
+        esq.save(index='rikang_qa')
+        return esq.to_dict(include_meta=True)
 
 
 class QuestionImage(models.Model):
@@ -93,3 +110,8 @@ class AnswerComment(models.Model):
         ordering = ('-created',)
         verbose_name = '回答评论'
         verbose_name_plural = verbose_name
+
+
+@receiver(post_save, sender=Question)
+def index_question(sender, instance, **kwargs):
+    instance.indexing()

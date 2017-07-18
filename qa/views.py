@@ -5,8 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
-from elasticsearch_dsl import Search
-
+from qa.search import search
 from qa.models import Question, Answer, QuestionImage
 from qa.serializers import (QuestionSerializer,
                             QuestionImageSerializer,
@@ -39,9 +38,7 @@ class QuestionListView(generics.ListAPIView):
             return queryset
         else:
             # full text search using keywords provided by user
-            search = Search(index='rikang_qa')
-            search = search.query('match', title=search_keyword)
-            results = search.execute()
+            results = search(search_keyword)
             queryset = list()
 
             for result in results.hits:
