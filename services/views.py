@@ -49,6 +49,46 @@ class NewOrderView(APIView):
                             status=status.HTTP_400_BAD_REQUEST)
 
 
+class AcceptOrderView(APIView):
+
+    permission_classes = (IsAuthenticated, RikangKeyPermission, IsDoctor)
+
+    def post(self, request):
+        order = Order.objects.get(id=request.data['order_no'])
+        consult = Consultation.objects.get(id=request.data['order_no'])
+
+        if consult.doctor == request.user.doctor:
+            # Change order status
+            order.status = Order.UNDERWAY
+            order.save()
+            # Set consultation start time
+            consult.start = datetime.now()
+            consult.save()
+            return Response({'accepted': True})
+        else:
+            return Response({'error': "您无权操作此订单"}, status=status.HTTP_403_FORBIDDEN)
+
+
+class FinishOrderView(APIView):
+
+    permission_classes = (IsAuthenticated, RikangKeyPermission, IsPatient)
+
+    def post(self, request):
+        order = Order.objects.get(id=request.data['order_no'])
+        consult = Consultation.objects.get(id=request.data['order_no'])
+
+        if order.owner != request.user.patient:
+            return Response({'error': "您无权操作此订单"}, status=status.HTTP_403_FORBIDDEN)
+
+        if datetime.now() - consult.start < timedelta(days=1):
+            return Response({'error': "尚未到取消订单的时间"}, status=status.HTTP_400_BAD_REQUEST)
+
+        order.status = Order.FINISHED
+        order.save()
+
+        return Response({'finished': True})
+
+
 class PayView(APIView):
 
     permission_classes = (IsAuthenticated, RikangKeyPermission, IsOwnerOrReadOnly)
