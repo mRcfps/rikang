@@ -5,8 +5,10 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
+import push
+
 from qa.search import search
-from qa.models import Question, Answer, QuestionImage
+from qa.models import Question, Answer, QuestionImage, AnswerComment
 from qa.serializers import (QuestionSerializer,
                             QuestionImageSerializer,
                             AnswerDisplaySerializer,
@@ -115,6 +117,10 @@ class PickAnswerView(APIView):
             answer = Answer.objects.get(id=request.data['pick'])
             answer.picked = True
             answer.save()
+            push.send_push_to_user(
+                message='您关于“{}”的回答被提问者采纳了。'.format(question.title),
+                user_id=answer.owner.user.id
+            )
             return Response({'picked': True})
         else:
             # this request does not come from owner of this question
@@ -136,9 +142,15 @@ class NewAnswerView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         doctor = self.request.user.doctor
-        serializer.save(owner=doctor)
+        answer = serializer.save(owner=doctor)
         doctor.patient_num += 1
         doctor.save()
+
+        question = answer.question
+        push.send_push_to_user(
+            message='您的问题“{}”有了新的回答。'.format(question.title),
+            user_id=question.owner.user.id
+        )
 
 
 class AnswersDetailView(generics.RetrieveUpdateAPIView):
@@ -179,7 +191,13 @@ class AnswerNewCommentView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         try:
-            serializer.save(replier=self.request.user.doctor)
+            comment = serializer.save(replier=self.request.user.doctor)
         except ObjectDoesNotExist:
             # this user is a patient
-            serializer.save(replier=self.request.user.patient)
+            comment = serializer.save(replier=self.request.user.patient)
+
+        if comment.reply_to is not None:
+            push.send_push_to_user(
+                message='您的评论有了新的回复：{}'.format(comment.body),
+                user_id=comment.reply_to.replier.user.id
+            )

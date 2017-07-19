@@ -9,6 +9,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
+import push
+
 from services import pay, types, events
 from services.models import Order, Consultation, Summary
 from users.models import Patient, Doctor
@@ -64,6 +66,11 @@ class AcceptOrderView(APIView):
             # Set consultation start time
             consult.start = datetime.now()
             consult.save()
+
+            push.send_push_to_user(
+                message="{}医生接受了您的在线咨询。".format(consult.doctor.name),
+                user_id=consult.patient.user.id
+            )
             return Response({'accepted': True})
         else:
             return Response({'error': "您无权操作此订单"}, status=status.HTTP_403_FORBIDDEN)
@@ -86,6 +93,13 @@ class FinishOrderView(APIView):
         order.status = Order.FINISHED
         order.save()
 
+        doctor = order.service.doctor
+        patient = order.service.patient
+        push.send_push_to_user(
+            message='对{}医生的咨询已结束，请及时评价。'.format(order.service.doctor.name),
+            user_id=patient.user.id
+        )
+
         return Response({'finished': True})
 
 
@@ -103,6 +117,11 @@ class PayView(APIView):
         )
 
         if created:
+            consult = Consultation.objects.get(id=request.data['order_no'])
+            push.send_push_to_user(
+                message="您有了新的在线咨询订单，请及时查看。",
+                user_id=consult.doctor.user.id
+            )
             return Response(response, status=status.HTTP_200_OK)
         else:
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
@@ -147,6 +166,13 @@ class RefundView(APIView):
         if success:
             order.status = Order.REFUND
             order.save()
+
+            doctor = order.service.doctor
+            patient = order.service.patient
+            push.send_push_to_user(
+                message="{}医生超过2小时未回复您的咨询请求，咨询费用已全部退还。".format(doctor.name),
+                user_id=patient.user.id
+            )
             return Response(response)
         else:
             return Response(response, status=status.HTTP_400_BAD_REQUEST)

@@ -2,6 +2,8 @@ from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
+import push
+
 from users.models import Doctor, Information, Patient, FavoritePost, FavoriteDoctor
 from users.serializers import DoctorSerializer, InformationSerializer
 from home.models import Post, Hospital, DoctorComment
@@ -137,3 +139,7 @@ class DoctorNewCommentView(generics.CreateAPIView):
     def perform_create(self, serializer):
         doctor = Doctor.objects.get(id=self.kwargs['pk'])
         serializer.save(patient=self.request.user.patient, doctor=doctor)
+        push.send_push_to_user(
+            message="有位用户刚刚对您做出了评价。",
+            user_id=doctor.user.id
+        )
