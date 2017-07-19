@@ -35,7 +35,10 @@ class UserLoginView(APIView):
         user = serializer.validated_data['user']
         token, created = Token.objects.get_or_create(user=user)
 
-        return Response({'token': token.key})
+        return Response({
+            'id': user.id,
+            'token': token.key
+        })
 
 
 class UserRegistrationView(generics.CreateAPIView):
