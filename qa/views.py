@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from django.core.exceptions import ObjectDoesNotExist
 
 from rest_framework import generics
@@ -71,7 +72,7 @@ class QuestionAddImageView(generics.CreateAPIView):
         serializer.save(question=question)
 
 
-class QuestionDetailView(generics.RetrieveUpdateAPIView):
+class QuestionDetailView(generics.RetrieveUpdateDestroyAPIView):
 
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer
@@ -105,6 +106,23 @@ class QuestionStarView(APIView):
             question.save()
 
         return Response({'id': int(pk), 'starred': True})
+
+
+class QuestionUnstarView(APIView):
+
+    permission_classes = (IsAuthenticated, RikangKeyPermission, IsPatient)
+
+    def get(self, request, pk):
+        question = Question.objects.get(id=pk)
+        patient = Patient.objects.get(user=request.user)
+        starred_question = get_object_or_404(StarredQuestion, question=question, patient=patient)
+        starred_question.delete()
+
+        # deduct stars of the question
+        question.stars -= 1
+        question.save()
+
+        return Response({'id': int(pk), 'unstarred': True})
 
 
 class PickAnswerView(APIView):

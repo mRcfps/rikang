@@ -59,13 +59,20 @@ class PostTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['id'], self.test_post.id)
 
-    def test_fav_post(self):
+    def test_fav_and_unfav_post(self):
         """Ensure a patient can make a post his/her favorites."""
         url = reverse('home:post-fav', args=[self.test_post.id])
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertNotEqual(self.patient.favorite_posts.count(), 0)
+
+        # then unfav the post
+        url = reverse('home:post-unfav', args=[self.test_post.id])
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(self.patient.favorite_posts.count(), 0)
 
     def test_get_all_fav_posts(self):
         """Ensure a patient can get all his/her favorite posts."""
@@ -170,12 +177,20 @@ class DoctorTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_fav_doctor(self):
+    def test_fav_and_unfav_doctor(self):
         """Ensure we can fav a doctor."""
         url = reverse('home:doctor-fav', args=[self.test_doctor.id])
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertNotEqual(self.patient.favorite_doctors.count(), 0)
+
+        # then unfav the doctor
+        url = reverse('home:doctor-unfav', args=[self.test_doctor.id])
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(self.patient.favorite_doctors.count(), 0)
 
     def test_get_all_fav_doctors(self):
         """Ensure we can get all of a patient's favorite doctors."""

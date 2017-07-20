@@ -24,6 +24,13 @@ urlpatterns = [
         name='post-fav'
     ),
 
+    # `GET` /home/posts/{post_id}/unfav
+    url(
+        r'^posts/(?P<pk>\d+)/unfav$',
+        views.PostUnfavView.as_view(),
+        name='post-unfav'
+    ),
+
     # `GET` /home/hospitals/
     url(
         r'^hospitals/$',
@@ -71,6 +78,13 @@ urlpatterns = [
         r'^doctors/(?P<pk>\d+)/fav$',
         views.DoctorFavView.as_view(),
         name='doctor-fav'
+    ),
+
+    # `GET` /home/doctors/{doctor_id}/unfav
+    url(
+        r'^doctors/(?P<pk>\d+)/unfav$',
+        views.DoctorUnfavView.as_view(),
+        name='doctor-unfav'
     ),
 
     # `GET` /home/doctors/{doctor_id}/answers/

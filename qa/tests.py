@@ -107,14 +107,30 @@ class QuestionTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(Question.objects.get(id=self.test_question.id).title, new_data['title'])
 
-    def test_star_question(self):
+    def test_delete_question(self):
+        """Ensure we can delete a question."""
+        url = reverse('qa:question-detail', args=[self.test_question.id])
+        response = self.client.delete(url)
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertNotEqual(Question.objects.count(), TEST_QUESTION_NUM)
+
+    def test_star_and_unstar_question(self):
         """Ensure we can star a question."""
-        url = reverse('qa:star-question', args=[self.test_question.id])
+        url = reverse('qa:question-star', args=[self.test_question.id])
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertNotEqual(Question.objects.get(id=self.test_question.id).stars, 0)
         self.assertNotEqual(self.patient.starred_questions.count(), 0)
+
+        # then we unstar the question
+        url = reverse('qa:question-unstar', args=[self.test_question.id])
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(Question.objects.get(id=self.test_question.id).stars, 0)
+        self.assertEqual(self.patient.starred_questions.count(), 0)
 
     def test_pick_an_answer_for_a_question(self):
         """Ensure we can pick a best answer to get the question solved."""

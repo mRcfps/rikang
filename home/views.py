@@ -1,3 +1,5 @@
+from django.shortcuts import get_object_or_404
+
 from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -38,6 +40,18 @@ class PostFavView(generics.RetrieveAPIView):
         patient = Patient.objects.get(user=request.user)
         post = Post.objects.get(id=self.kwargs['pk'])
         fav_post, created = FavoritePost.objects.get_or_create(patient=patient, post=post)
+
+        return Response({'id': self.kwargs['pk'], 'success': True})
+
+
+class PostUnfavView(generics.RetrieveAPIView):
+    """GET this endpoint and the given post will be removed from favorite posts."""
+
+    def get(self, request, *args, **kwargs):
+        patient = Patient.objects.get(user=request.user)
+        post = Post.objects.get(id=self.kwargs['pk'])
+        fav_post = get_object_or_404(FavoritePost, patient=patient, post=post)
+        fav_post.delete()
 
         return Response({'id': self.kwargs['pk'], 'success': True})
 
@@ -109,6 +123,21 @@ class DoctorFavView(APIView):
         doctor = Doctor.objects.get(id=self.kwargs['pk'])
         fav_doctor, created = FavoriteDoctor.objects.get_or_create(patient=patient,
                                                                    doctor=doctor)
+
+        return Response({'id': self.kwargs['pk'], 'success': True})
+
+
+class DoctorUnfavView(APIView):
+    """
+    GET this endpoint and the given doctor will be removed from
+    favorite doctors.
+    """
+
+    def get(self, request, *args, **kwargs):
+        patient = Patient.objects.get(user=request.user)
+        doctor = Doctor.objects.get(id=self.kwargs['pk'])
+        fav_doctor = get_object_or_404(FavoriteDoctor, patient=patient, doctor=doctor)
+        fav_doctor.delete()
 
         return Response({'id': self.kwargs['pk'], 'success': True})
 

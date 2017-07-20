@@ -31,7 +31,7 @@ urlpatterns = [
         name='question-image-list'
     ),
 
-    # `GET``PUT` /qa/questions/{question_id}/
+    # `GET``PUT``DELETE` /qa/questions/{question_id}/
     url(
         r'^questions/(?P<pk>\d+)/$',
         views.QuestionDetailView.as_view(),
@@ -42,7 +42,14 @@ urlpatterns = [
     url(
         r'^questions/(?P<pk>\d+)/star$',
         views.QuestionStarView.as_view(),
-        name='star-question'
+        name='question-star'
+    ),
+
+    # `GET` /qa/questions/{question_id}/unstar
+    url(
+        r'^questions/(?P<pk>\d+)/unstar$',
+        views.QuestionUnstarView.as_view(),
+        name='question-unstar'
     ),
 
     # `GET` /qa/questions/{question_id}/answers/
