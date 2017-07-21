@@ -102,6 +102,13 @@ class Information(models.Model):
     achievements = models.TextField(blank=True, verbose_name='学术研究成果及获奖情况')
     motto = models.TextField(blank=True, verbose_name='医生寄语')
 
+    class Meta:
+        verbose_name = "医生详细资料"
+        verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return self.doctor.name + "的详细资料"
+
 
 class Patient(models.Model):
 
