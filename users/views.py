@@ -1,5 +1,3 @@
-import random
-
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
 
@@ -14,6 +12,7 @@ from rest_framework import generics, status
 from users.models import Phone, Doctor, Patient, Information
 from users.serializers import (UserSerializer,
                                DoctorSerializer,
+                               DoctorEditSerializer,
                                PatientSerializer,
                                InformationSerializer)
 from users.permissions import RikangKeyPermission, IsDoctor, IsPatient, IsSMSVerified
@@ -94,7 +93,7 @@ class VerifySmsCodeView(APIView):
 
 class DoctorInitView(generics.CreateAPIView):
 
-    serializer_class = DoctorSerializer
+    serializer_class = DoctorEditSerializer
 
     def perform_create(self, serializer):
         doctor = serializer.save(user=self.request.user)
@@ -105,8 +104,7 @@ class DoctorInitView(generics.CreateAPIView):
 
 class DoctorProfileView(generics.RetrieveUpdateAPIView):
 
-    serializer_class = DoctorSerializer
-    permission_classes = (IsAuthenticated, RikangKeyPermission, IsDoctor)
+    serializer_class = DoctorEditSerializer
 
     def get_object(self):
         return Doctor.objects.get(user=self.request.user)
@@ -115,7 +113,6 @@ class DoctorProfileView(generics.RetrieveUpdateAPIView):
 class DoctorInfoView(generics.RetrieveUpdateAPIView):
 
     serializer_class = InformationSerializer
-    permission_classes = (IsAuthenticated, RikangKeyPermission, IsDoctor)
 
     def get_object(self):
         doctor = Doctor.objects.get(user=self.request.user)

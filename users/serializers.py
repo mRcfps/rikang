@@ -33,6 +33,14 @@ class DoctorSerializer(serializers.ModelSerializer):
         read_only_fields = ('id', 'order_num', 'ratings', 'patient_num')
 
 
+class DoctorEditSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Doctor
+        fields = ('name', 'avatar', 'department', 'start', 'consult_price',
+                  'title', 'hospital')
+
+
 class PatientSerializer(serializers.ModelSerializer):
 
     phone = serializers.CharField(source='user.username', required=False)

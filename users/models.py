@@ -1,5 +1,5 @@
 import random
-from functools import partial
+from datetime import datetime
 
 from django.db import models
 from django.contrib.auth.models import User
@@ -9,7 +9,7 @@ from home.models import Hospital, Post
 
 
 def random_code():
-        return random.randrange(1001, 9999)
+    return random.randrange(1001, 9999)
 
 
 class Phone(models.Model):
@@ -62,7 +62,7 @@ class Doctor(models.Model):
     department = models.CharField(choices=departments.DEPARTMENT_CHOICES,
                                   max_length=3,
                                   verbose_name='科室')
-    years = models.PositiveIntegerField(verbose_name='从医时间')
+    start = models.DateField(verbose_name='开始从医年份')
     consult_price = models.DecimalField(default=0,
                                         max_digits=10,
                                         decimal_places=2,
@@ -78,7 +78,7 @@ class Doctor(models.Model):
     active_doctors = ActiveDoctorManager()
 
     class Meta:
-        ordering = ('patient_num', 'ratings', 'years')
+        ordering = ('patient_num', 'ratings')
         verbose_name = '医生'
         verbose_name_plural = verbose_name
 
@@ -88,6 +88,10 @@ class Doctor(models.Model):
     @property
     def order_num(self):
         return self.consultations.count()
+
+    @property
+    def years(self):
+        return datetime.now().year - self.start.year
 
 
 class Information(models.Model):

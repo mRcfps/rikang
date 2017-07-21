@@ -109,7 +109,7 @@ class DoctorTests(APITestCase):
         data = {
             'name': 'Dr Test',
             'department': 'NEO',
-            'years': 20,
+            'start': '2000-01-01',
             'title': 'C',
             'hospital': self.hospital.id
         }
@@ -128,7 +128,7 @@ class DoctorTests(APITestCase):
         new_data = {
             'name': 'Dr Test',
             'department': 'PNE',
-            'years': 20,
+            'start': '2000-01-01',
             'title': 'C',
             'hospital': self.hospital.id
         }
