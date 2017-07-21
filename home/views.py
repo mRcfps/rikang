@@ -168,6 +168,13 @@ class DoctorNewCommentView(generics.CreateAPIView):
     def perform_create(self, serializer):
         doctor = get_object_or_404(Doctor, id=self.kwargs['pk'], active=True)
         serializer.save(patient=self.request.user.patient, doctor=doctor)
+
+        # calculate new rating for this doctor
+        new_rating = serializer.validated_data['ratings']
+        comment_num = doctor.comments.count()
+        doctor.ratings = (doctor.ratings * (comment_num - 1) + new_rating) / comment_num
+        doctor.save()
+
         push.send_push_to_user(
             message="有位用户刚刚对您做出了评价。",
             user_id=doctor.user.id
