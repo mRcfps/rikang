@@ -22,7 +22,7 @@ class Question(models.Model):
     solved = models.BooleanField(default=False, verbose_name='已解决')
     stars = models.IntegerField(default=0, verbose_name='关注人数')
     updated = models.DateTimeField(auto_now=True, verbose_name='最近更新时间')
-    created = models.DateField(auto_now_add=True, verbose_name='创建时间')
+    created = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
 
     class Meta:
         ordering = ('stars', 'answers', '-updated')
@@ -71,7 +71,7 @@ class Answer(models.Model):
     advice = models.CharField(blank=True, max_length=100, verbose_name='指导建议')
     picked = models.BooleanField(default=False, verbose_name='被采纳')
     upvotes = models.PositiveIntegerField(default=0, verbose_name='支持数')
-    created = models.DateField(auto_now_add=True, verbose_name='创建时间')
+    created = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
 
     class Meta:
         ordering = ('picked', 'upvotes', '-created')
@@ -104,7 +104,7 @@ class AnswerComment(models.Model):
                                  verbose_name='回复评论')
     body = models.TextField(verbose_name='评论内容')
     upvotes = models.PositiveIntegerField(default=0, verbose_name='获赞数')
-    created = models.DateField(auto_now_add=True, verbose_name='创建时间')
+    created = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
 
     class Meta:
         ordering = ('-created',)

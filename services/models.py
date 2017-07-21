@@ -55,7 +55,7 @@ class Consultation(models.Model):
                                 related_name='consulations',
                                 verbose_name='患者')
     start = models.DateTimeField(auto_now=True, verbose_name='开始时间')
-    created = created = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
+    created = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
 
     class Meta:
         ordering = ('-created',)
