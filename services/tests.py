@@ -20,9 +20,10 @@ class OrderTests(APITestCase):
             user=self.doctor_user,
             name='test',
             department='AND',
-            years=10,
+            start='2000-01-01',
             consult_price=50.00,
-            title='A'
+            title='A',
+            active=True
         )
 
         # initialize a patient

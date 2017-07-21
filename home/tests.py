@@ -135,8 +135,9 @@ class DoctorTests(APITestCase):
                 user=user,
                 name='doctor {}'.format(index),
                 department='NEO',
-                years=20,
-                title='C'
+                start='2000-01-01',
+                title='C',
+                active=True
             )
             Information.objects.create(doctor=doctor)
 
@@ -215,8 +216,9 @@ class DoctorCommentTests(APITestCase):
             user=doctor_user,
             name='test_doctor',
             department='GYN',
-            years=10,
-            title='A'
+            start='2000-01-01',
+            title='A',
+            active=True
         )
 
         patient_user = User.objects.create_user(username='test_patient', password='test')
