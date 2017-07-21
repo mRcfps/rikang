@@ -104,10 +104,15 @@ class DoctorInitView(generics.CreateAPIView):
 
 class DoctorProfileView(generics.RetrieveUpdateAPIView):
 
-    serializer_class = DoctorEditSerializer
-
     def get_object(self):
         return Doctor.objects.get(user=self.request.user)
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return DoctorSerializer
+        else:
+            # the method is PUT
+            return DoctorEditSerializer
 
 
 class DoctorInfoView(generics.RetrieveUpdateAPIView):
