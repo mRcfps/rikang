@@ -27,6 +27,16 @@ class Phone(models.Model):
         return self.number
 
 
+class ActiveDoctorManager(models.Manager):
+    """
+    Model manager that returns only verified doctors
+    (`active` field is `True`).
+    """
+    def get_queryset(self):
+        queryset = super(ActiveDoctorManager, self).get_queryset()
+        return queryset.filter(active=True)
+
+
 class Doctor(models.Model):
 
     # Titles of doctors
@@ -60,7 +70,12 @@ class Doctor(models.Model):
     title = models.CharField(choices=TITLE_CHOICES, max_length=1, verbose_name='职称')
     ratings = models.PositiveIntegerField(default=5, verbose_name='评分')
     patient_num = models.PositiveIntegerField(default=0, verbose_name='已帮助患者')
+    active = models.BooleanField(default=False, verbose_name='是否审核通过')
     created = models.DateField(auto_now_add=True, verbose_name='注册时间')
+
+    # model managers
+    objects = models.Manager()
+    active_doctors = ActiveDoctorManager()
 
     class Meta:
         ordering = ('patient_num', 'ratings', 'years')
