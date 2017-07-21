@@ -41,10 +41,10 @@ class IsPatient(permissions.BasePermission):
 
 
 class IsDoctor(permissions.BasePermission):
-    """Permission check whether this request is from a patient."""
+    """Permission check whether this request is from an active doctor."""
 
     def has_permission(self, request, view):
-        return Doctor.objects.filter(user=request.user).exists()
+        return Doctor.objects.filter(user=request.user, active=True).exists()
 
 
 class IsSMSVerified(permissions.BasePermission):

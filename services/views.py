@@ -25,7 +25,7 @@ class NewOrderView(APIView):
         try:
             if request.data['type'] == types.CONSULTATION:
                 patient = Patient.objects.get(id=request.user.patient.id)
-                doctor = Doctor.objects.get(id=request.data['doctor'])
+                doctor = get_object_or_404(Doctor, id=request.data['doctor'], active=True)
                 consult = Consultation.objects.create(patient=patient,
                                                       doctor=doctor,
                                                       id=uuid.uuid4().hex)

@@ -88,7 +88,7 @@ class DoctorListView(generics.ListAPIView):
     def get_queryset(self):
         dep = self.request.query_params.get('dep', None)
         order = self.request.query_params.get('order', None)
-        results = Doctor.objects.all()
+        results = Doctor.active_doctors.all()
 
         if dep is not None:
             # filter against given department
@@ -103,7 +103,7 @@ class DoctorListView(generics.ListAPIView):
 class DoctorDetailView(generics.RetrieveAPIView):
     """GET a single doctor by id."""
 
-    queryset = Doctor.objects.all()
+    queryset = Doctor.active_doctors.all()
     serializer_class = DoctorSerializer
 
 
@@ -120,7 +120,7 @@ class DoctorFavView(APIView):
 
     def get(self, request, *args, **kwargs):
         patient = Patient.objects.get(user=request.user)
-        doctor = Doctor.objects.get(id=self.kwargs['pk'])
+        doctor = get_object_or_404(Doctor, id=self.kwargs['pk'], active=True)
         fav_doctor, created = FavoriteDoctor.objects.get_or_create(patient=patient,
                                                                    doctor=doctor)
 
@@ -135,7 +135,7 @@ class DoctorUnfavView(APIView):
 
     def get(self, request, *args, **kwargs):
         patient = Patient.objects.get(user=request.user)
-        doctor = Doctor.objects.get(id=self.kwargs['pk'])
+        doctor = get_object_or_404(Doctor, id=self.kwargs['pk'], active=True)
         fav_doctor = get_object_or_404(FavoriteDoctor, patient=patient, doctor=doctor)
         fav_doctor.delete()
 
@@ -147,7 +147,7 @@ class DoctorAnswersView(generics.ListAPIView):
     serializer_class = DoctorAnswerSerializer
 
     def get_queryset(self):
-        doctor = Doctor.objects.get(id=self.kwargs['pk'])
+        doctor = get_object_or_404(Doctor, id=self.kwargs['pk'], active=True)
         return doctor.answers.all()
 
 
@@ -156,7 +156,7 @@ class DoctorCommentsView(generics.ListAPIView):
     serializer_class = CommentDisplaySerializer
 
     def get_queryset(self):
-        doctor = Doctor.objects.get(id=self.kwargs['pk'])
+        doctor = get_object_or_404(Doctor, id=self.kwargs['pk'], active=True)
         return DoctorComment.objects.filter(doctor=doctor)
 
 
@@ -166,7 +166,7 @@ class DoctorNewCommentView(generics.CreateAPIView):
     serializer_class = NewCommentDisplaySerializer
 
     def perform_create(self, serializer):
-        doctor = Doctor.objects.get(id=self.kwargs['pk'])
+        doctor = get_object_or_404(Doctor, id=self.kwargs['pk'], active=True)
         serializer.save(patient=self.request.user.patient, doctor=doctor)
         push.send_push_to_user(
             message="有位用户刚刚对您做出了评价。",
