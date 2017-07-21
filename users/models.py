@@ -2,6 +2,7 @@ import random
 from datetime import datetime
 
 from django.db import models
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import User
 
 import departments
@@ -62,13 +63,17 @@ class Doctor(models.Model):
     department = models.CharField(choices=departments.DEPARTMENT_CHOICES,
                                   max_length=3,
                                   verbose_name='科室')
-    start = models.DateField(verbose_name='开始从医年份')
+    start = models.DateField(verbose_name='开始从医日期')
     consult_price = models.DecimalField(default=0,
                                         max_digits=10,
                                         decimal_places=2,
                                         verbose_name='咨询价格')
     title = models.CharField(choices=TITLE_CHOICES, max_length=1, verbose_name='职称')
-    ratings = models.PositiveIntegerField(default=5, verbose_name='评分')
+    ratings = models.DecimalField(default=5.0,
+                                  max_digits=2,
+                                  decimal_places=1,
+                                  validators=[MinValueValidator(0), MaxValueValidator(5)],
+                                  verbose_name='评分')
     patient_num = models.PositiveIntegerField(default=0, verbose_name='已帮助患者')
     active = models.BooleanField(default=False, verbose_name='是否审核通过')
     created = models.DateField(auto_now_add=True, verbose_name='注册时间')
@@ -96,7 +101,7 @@ class Doctor(models.Model):
 
 class Information(models.Model):
 
-    doctor = models.OneToOneField(Doctor)
+    doctor = models.OneToOneField(Doctor, verbose_name='医生')
     specialty = models.TextField(blank=True, verbose_name='专长')
     background = models.TextField(blank=True, verbose_name='教育背景')
     achievements = models.TextField(blank=True, verbose_name='学术研究成果及获奖情况')
