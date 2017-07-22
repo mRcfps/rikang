@@ -77,6 +77,11 @@ class Doctor(models.Model):
     patient_num = models.PositiveIntegerField(default=0, verbose_name='已帮助患者')
     active = models.BooleanField(default=False, verbose_name='是否审核通过')
     created = models.DateField(auto_now_add=True, verbose_name='注册时间')
+    doctor_license = models.ImageField(null=True,
+                                       blank=True,
+                                       upload_to='licenses/',
+                                       verbose_name='医生执照')
+    id_card = models.ImageField(null=True, blank=True, upload_to='idcards/', verbose_name='持证自拍')
 
     # model managers
     objects = models.Manager()

@@ -116,6 +116,22 @@
             <th>开始从医时间</th>
             <td>{{ doctor.start }}</td>
           </tr>
+          <tr class="row7">
+            <th>持证自拍</th>
+            {% if doctor.avatar %}
+              <td><img src="{{ doctor.id_card.url }}"></td>
+            {% else %}
+              <td>暂无</td>
+            {% endif %}
+          </tr>
+          <tr class="row8">
+            <th>医生执照</th>
+            {% if doctor.avatar %}
+              <td><img src="{{ doctor.doctor_license.url }}"></td>
+            {% else %}
+              <td>暂无</td>
+            {% endif %}
+          </tr>
         </tbody>
       </table>
     </div>
