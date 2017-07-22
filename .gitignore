@@ -1,5 +1,6 @@
 venv/
 media/
+static/
 .vscode/
 __pycache__
 *.pyc
