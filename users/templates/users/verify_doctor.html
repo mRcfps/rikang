@@ -1,0 +1,129 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block extrahead %}
+   <style>
+    .submit-row {
+      padding: 20px 14px;
+      margin: 20px 0 0 0;
+      background: #f8f8f8;
+      border: 1px solid #eee;
+      border-radius: 4px;
+      text-align: right;
+      overflow: hidden;
+    }
+
+    .main-btn {
+      margin: 10px 10px 0 8px;
+      border: none;
+      background: #417690;
+      height: 35px;
+      line-height: 15px;
+      padding: 10px 15px;
+      border-radius: 4px;
+    }
+
+    .sub-btn {
+      margin: 10px 0 10px 0;
+      border: none;
+      background: #79aec8;
+      height: 35px;
+      line-height: 15px;
+      padding: 10px 15px;
+      border-radius: 4px;
+    }
+
+    a:link, a:visited {
+      color: #fff;
+    }
+
+    th, td {
+      padding: 20px;
+    }
+
+  </style>
+{% endblock extrahead %}
+
+{% block title %}
+  {{ doctor.name }}审核 | 后台管理
+{% endblock title %}
+
+{% block branding %}
+  <h1 id="site-name">
+    <a href="{% url 'admin:index' %}">
+      日康 | 后台管理
+    </a>
+  </h1>
+{% endblock branding %}
+
+{% block breadcrumbs %}
+  <div class="breadcrumbs">
+  <a href="/admin/">首页</a>
+  › <a href="/admin/users/">用户管理</a>
+  › <a href="/admin/users/doctor/">医生</a>
+  › {{ doctor.name }}
+  </div>
+{% endblock breadcrumbs %}
+
+{% block content %}
+  <div id="content" class="flex">
+    <h1>确认要审核通过 {{ doctor.name }} 吗？</h1>
+    <div id="content-main">
+      <div class="results">
+      <table id="result_list" style="width: 100%">
+        <thead>
+          <tr>
+            <th scope="col">
+              <div class="text">
+                <a href="?o=1">条目</a>
+              </div>
+              <div class="clear"></div>
+            </th>
+            <th scope="col">
+              <div class="text">
+                <a href="?o=2">信息</a>
+              </div>
+              <div class="clear"></div>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="row1">
+            <th>姓名</th>
+            <td>{{ doctor.name }}</td>
+          </tr>
+          <tr class="row2">
+            <th>照片</th>
+            {% if doctor.avatar %}
+              <td><img src="{{ doctor.avatar.url }}"></td>
+            {% else %}
+              <td>暂无</td>
+            {% endif %}
+          </tr>
+          <tr class="row3">
+            <th>医院</th>
+            <td>{{ doctor.hospital.name }}</td>
+          </tr>
+          <tr class="row4">
+            <th>科室</th>
+            <td>{{ doctor.get_department_display }}</td>
+          </tr>
+          <tr class="row5">
+            <th>职位</th>
+            <td>{{ doctor.get_title_display }}</td>
+          </tr>
+          <tr class="row6">
+            <th>开始从医时间</th>
+            <td>{{ doctor.start }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="submit-row">
+      <a class="sub-btn" href="/admin/users/doctor/">返回上一页</a>
+      <a class="main-btn" href="{% url 'users:notify-verification' doctor.id%}">确认审核</a>
+    </div>
+
+  </div>
+{% endblock content %}

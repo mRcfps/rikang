@@ -100,4 +100,16 @@ urlpatterns = [
         views.PatientServicesView.as_view(),
         name='patient-services'
     ),
+
+    url(
+        r'^verify-doctor/(?P<doctor_id>\d+)/$',
+        views.admin_verify_doctor,
+        name='verify-doctor'
+    ),
+
+    url(
+        r'notify-verification/(?P<doctor_id>\d+)/$',
+        views.admin_notify_verified_doctor,
+        name='notify-verification'
+    ),
 ]

@@ -1,5 +1,6 @@
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.models import User
+from django.contrib.admin.views.decorators import staff_member_required
 
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
@@ -8,6 +9,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import generics, status
+
+import push
 
 from users.models import Phone, Doctor, Patient, Information
 from users.serializers import (UserSerializer,
@@ -185,3 +188,23 @@ class PatientServicesView(generics.ListAPIView):
     def get_queryset(self):
         patient = Patient.objects.get(user=self.request.user)
         return patient.orders.all()
+
+@staff_member_required
+def admin_verify_doctor(request, doctor_id):
+    doctor = get_object_or_404(Doctor, id=doctor_id)
+    context = {'doctor': doctor}
+
+    return render(request, 'users/verify_doctor.html', context)
+
+
+@staff_member_required
+def admin_notify_verified_doctor(request, doctor_id):
+    doctor = get_object_or_404(Doctor, id=doctor_id)
+    doctor.active = True
+    doctor.save()
+    push.send_push_to_user(
+        message="恭喜您通过日康的医生审核！欢迎成为日康平台的一员！",
+        user_id=doctor.user.id
+    )
+
+    return redirect('admin:users_doctor_changelist')

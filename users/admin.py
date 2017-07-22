@@ -11,29 +11,30 @@ class PhoneAdmin(admin.ModelAdmin):
 
 
 def view_info(obj):
-    if obj.active:
-        return '<a href="{}">查看详细资料</a>'.format(
-            reverse('admin:users_information_change', args=[obj.id])
-        )
-    else:
-        return None
+    return '<a href="{}">查看详细资料</a>'.format(
+        reverse('admin:users_information_change', args=[obj.id])
+    )
 
 view_info.allow_tags = True
 
 
+def verify_doctor(obj):
+    if not obj.active:
+        return '<a href="{}">进行审核</a>'.format(
+            reverse('users:verify-doctor', args=[obj.id])
+        )
+
+verify_doctor.allow_tags = True
+
 class DoctorAdmin(admin.ModelAdmin):
 
-    list_display = ('name', 'phone_number', 'department', 'hospital', 'years',
-                    'title', 'ratings', 'patient_num', 'created', view_info, 'active')
+    list_display = ('name', 'department', 'hospital', 'title', 'ratings',
+                    'patient_num', 'created', view_info, 'active', verify_doctor)
     list_filter = ('department', 'title', 'ratings')
-    list_editable = ('active',)
     search_fields = ('name',)
 
-    def phone_number(self, instance):
-        return instance.user.username
-
-    phone_number.short_description = '手机号'
     view_info.short_description = '详细资料'
+    verify_doctor.short_description = ''
 
 
 class PatientAdmin(admin.ModelAdmin):
