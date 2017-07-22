@@ -82,7 +82,7 @@ class DoctorAnswerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Answer
-        fields = ('id', 'question_title', 'question', 'diagnosis',
+        fields = ('id', 'question_title', 'question', 'diagnosis', 'comment_num',
                   'prescription', 'course', 'advice', 'picked', 'upvotes')
 
 
