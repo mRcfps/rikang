@@ -56,10 +56,7 @@ class Doctor(models.Model):
     user = models.OneToOneField(User, verbose_name='手机号')
     name = models.CharField(max_length=50, verbose_name='姓名')
     avatar = models.ImageField(upload_to='avatars/', blank=True, verbose_name='头像')
-    hospital = models.ForeignKey(Hospital,
-                                 related_name='doctors',
-                                 null=True,
-                                 verbose_name='所属医院')
+    hospital = models.CharField(max_length=50, verbose_name='医院')
     department = models.CharField(choices=departments.DEPARTMENT_CHOICES,
                                   max_length=3,
                                   verbose_name='科室')

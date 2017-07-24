@@ -13,15 +13,16 @@ class PostAdmin(admin.ModelAdmin):
     search_fields = ('title',)
 
 
-class HospitalAdmin(admin.ModelAdmin):
+# class HospitalAdmin(admin.ModelAdmin):
 
-    list_display = ('name', 'location', 'rank', 'phone')
-    list_filter = ('rank',)
+#     list_display = ('name', 'location', 'rank', 'phone')
+#     list_filter = ('rank',)
 
 admin.site.register(Post, PostAdmin)
-admin.site.register(Hospital, HospitalAdmin)
+# admin.site.register(Hospital, HospitalAdmin)
 
 # AdminSite settings
+admin.site.site_url = None
 admin.site.site_header = '日康 | 后台管理'
 admin.site.site_title = '后台管理'
 

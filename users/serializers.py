@@ -24,12 +24,10 @@ class UserSerializer(serializers.ModelSerializer):
 
 class DoctorSerializer(serializers.ModelSerializer):
 
-    hospital_name = serializers.CharField(source='hospital.name', required=False)
-
     class Meta:
         model = Doctor
-        fields = ('id', 'name', 'avatar', 'department', 'years', 'consult_price', 'order_num',
-                  'title', 'hospital', 'hospital_name', 'ratings', 'patient_num')
+        fields = ('id', 'name', 'avatar', 'department', 'years', 'consult_price',
+                  'order_num', 'title', 'hospital', 'ratings', 'patient_num')
         read_only_fields = ('id', 'order_num', 'ratings', 'patient_num')
 
 
