@@ -27,6 +27,7 @@ class QuestionTests(APITestCase):
         self.doctor = Doctor.objects.create(user=self.doctor_user,
                                             name='test',
                                             department='GYN',
+                                            hospital='test',
                                             start='2000-01-01',
                                             title='C',
                                             active=True)
@@ -164,6 +165,7 @@ class AnswerTests(APITestCase):
         self.doctor = Doctor.objects.create(user=self.doctor_user,
                                             name='test',
                                             department='GYN',
+                                            hospital='test',
                                             start='2000-01-01',
                                             title='C',
                                             active=True)
@@ -234,6 +236,7 @@ class AnswerCommentTests(APITestCase):
             user=self.doctor_user,
             name='test_doctor',
             department='GYN',
+            hospital='test',
             start='2000-01-01',
             title='A',
             active=True

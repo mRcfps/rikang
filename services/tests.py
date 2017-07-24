@@ -20,6 +20,7 @@ class OrderTests(APITestCase):
             user=self.doctor_user,
             name='test',
             department='AND',
+            hospital='test',
             start='2000-01-01',
             consult_price=50.00,
             title='A',

@@ -87,38 +87,38 @@ class PostTests(APITestCase):
         self.assertEqual(response.data['count'], TEST_POST_NUM)
 
 
-class HospitalTests(APITestCase):
-    """Test suite for the hospital model."""
+# class HospitalTests(APITestCase):
+#     """Test suite for the hospital model."""
 
-    def setUp(self):
-        """Initialize several hospitals to play with."""
-        self.user = User.objects.create_user(username='test', password='test')
+#     def setUp(self):
+#         """Initialize several hospitals to play with."""
+#         self.user = User.objects.create_user(username='test', password='test')
 
-        for _ in range(TEST_HOSPITAL_NUM):
-            Hospital.objects.create(name='test', rank='3A', phone=123456)
+#         for _ in range(TEST_HOSPITAL_NUM):
+#             Hospital.objects.create(name='test', rank='3A', phone=123456)
 
-        self.client = APIClient()
-        self.client.force_authenticate(user=self.user)
-        self.test_hospital = Hospital.objects.first()
+#         self.client = APIClient()
+#         self.client.force_authenticate(user=self.user)
+#         self.test_hospital = Hospital.objects.first()
 
-    def test_get_hospital_list(self):
-        """Ensure we can get a list of hospitals."""
-        url = reverse('home:hospital-list')
-        response = self.client.get(url)
+#     def test_get_hospital_list(self):
+#         """Ensure we can get a list of hospitals."""
+#         url = reverse('home:hospital-list')
+#         response = self.client.get(url)
 
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['count'], TEST_HOSPITAL_NUM)
+#         self.assertEqual(response.status_code, status.HTTP_200_OK)
+#         self.assertEqual(response.data['count'], TEST_HOSPITAL_NUM)
 
-        # Test if pagination works
-        self.assertNotEqual(response.data['next'], None)
+#         # Test if pagination works
+#         self.assertNotEqual(response.data['next'], None)
 
-    def test_get_hospital_by_id(self):
-        """Ensure we can get one single hospital by id."""
-        url = reverse('home:hospital-detail', args=[self.test_hospital.id])
-        response = self.client.get(url)
+#     def test_get_hospital_by_id(self):
+#         """Ensure we can get one single hospital by id."""
+#         url = reverse('home:hospital-detail', args=[self.test_hospital.id])
+#         response = self.client.get(url)
 
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['id'], self.test_hospital.id)
+#         self.assertEqual(response.status_code, status.HTTP_200_OK)
+#         self.assertEqual(response.data['id'], self.test_hospital.id)
 
 
 class DoctorTests(APITestCase):
@@ -135,6 +135,7 @@ class DoctorTests(APITestCase):
                 user=user,
                 name='doctor {}'.format(index),
                 department='NEO',
+                hospital='test',
                 start='2000-01-01',
                 title='C',
                 active=True
@@ -216,6 +217,7 @@ class DoctorCommentTests(APITestCase):
             user=doctor_user,
             name='test_doctor',
             department='GYN',
+            hospital='test',
             start='2000-01-01',
             title='A',
             active=True

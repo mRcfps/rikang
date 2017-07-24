@@ -93,13 +93,6 @@ class DoctorTests(APITestCase):
     def setUp(self):
         """Initialize a doctor to play with."""
         self.user = User.objects.create_user(username='doctor', password='doctor')
-        self.hospital = Hospital.objects.create(
-            name='test',
-            location='test',
-            rank='3A',
-            phone=123456,
-            description='test'
-        )
 
         self.client = APIClient()
         self.client.force_authenticate(user=self.user)
@@ -109,9 +102,9 @@ class DoctorTests(APITestCase):
         data = {
             'name': 'Dr Test',
             'department': 'NEO',
+            'hospital': 'test',
             'start': '2000-01-01',
             'title': 'C',
-            'hospital': self.hospital.id
         }
         self.client.post(url, data, format='json')
         self.doctor = Doctor.objects.first()
@@ -130,7 +123,7 @@ class DoctorTests(APITestCase):
             'department': 'PNE',
             'start': '2000-01-01',
             'title': 'C',
-            'hospital': self.hospital.id
+            'hospital': 'test',
         }
         response = self.client.put(url, new_data, format='json')
 
