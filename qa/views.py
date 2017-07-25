@@ -159,8 +159,9 @@ class NewAnswerView(generics.CreateAPIView):
     permission_classes = (IsAuthenticated, RikangKeyPermission, IsDoctor)
 
     def perform_create(self, serializer):
+        question = Question.objects.get(id=self.kwargs['pk'])
         doctor = self.request.user.doctor
-        answer = serializer.save(owner=doctor)
+        answer = serializer.save(question=question, owner=doctor)
         doctor.patient_num += 1
         doctor.save()
 

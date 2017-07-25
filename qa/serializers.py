@@ -40,8 +40,8 @@ class AnswerEditSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Answer
-        fields = ('question', 'owner', 'diagnosis', 'prescription',
-                  'course', 'advice')
+        fields = ('diagnosis', 'prescription', 'course', 'advice')
+
 
 class QuestionImageSerializer(serializers.ModelSerializer):
 
