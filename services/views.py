@@ -94,6 +94,9 @@ class FinishOrderView(APIView):
         order.save()
 
         doctor = order.service.doctor
+        doctor.order_num += 1
+        doctor.save()
+
         patient = order.service.patient
         push.send_push_to_user(
             message='对{}医生的咨询已结束，请及时评价。'.format(order.service.doctor.name),
