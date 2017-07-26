@@ -200,9 +200,9 @@ class TestPushView(APIView):
 
     def post(self, request):
         msg = request.data['msg']
-        push.send_push_to_user(msg, request.user.id)
+        response = push.send_push_to_user(msg, request.user.id)
 
-        return Response()
+        return Response(response.json(), status=response.status_code)
 
 
 @staff_member_required
