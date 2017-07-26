@@ -1,7 +1,7 @@
 from django.urls import reverse
 from django.contrib import admin
 
-from users.models import Phone, Doctor, Patient, Information
+from users.models import Phone, Doctor, Patient, Information, ClientID
 
 
 class PhoneAdmin(admin.ModelAdmin):
@@ -47,7 +47,12 @@ class PatientAdmin(admin.ModelAdmin):
     phone_number.short_description = '手机号'
 
 
+class ClientIDAdmin(admin.ModelAdmin):
+    list_display = ('user', 'cid')
+
+
 admin.site.register(Phone, PhoneAdmin)
 admin.site.register(Doctor, DoctorAdmin)
 admin.site.register(Patient, PatientAdmin)
 admin.site.register(Information)
+admin.site.register(ClientID, ClientIDAdmin)

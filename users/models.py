@@ -182,3 +182,7 @@ class ClientID(models.Model):
 
     user = models.OneToOneField(User)
     cid = models.CharField(max_length=50)
+
+    class Meta:
+        verbose_name = '个推ID'
+        verbose_name_plural = verbose_name

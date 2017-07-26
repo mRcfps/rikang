@@ -60,4 +60,4 @@ class CIDSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ClientID
-        fields = '__all__'
+        fields = ('user', 'cid')
