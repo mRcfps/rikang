@@ -38,6 +38,19 @@ urlpatterns = [
         name='verify-sms-code'
     ),
 
+    # `POST` /users/new-cid
+    url(
+        r'^new-cid$',
+        views.NewCIDView.as_view(),
+        name='new-cid'
+    ),
+
+    url(
+        r'^test-push/$',
+        views.TestPushView.as_view(),
+        name='test-push'
+    ),
+
     # `POST` /users/doctor/init
     url(
         r'^doctor/init$',

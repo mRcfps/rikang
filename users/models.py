@@ -176,3 +176,9 @@ class FavoriteDoctor(models.Model):
     class Meta:
         ordering = ('-created',)
         unique_together = ('patient', 'doctor')
+
+
+class ClientID(models.Model):
+
+    user = models.OneToOneField(User)
+    cid = models.CharField(max_length=50)

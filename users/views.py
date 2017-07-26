@@ -17,7 +17,8 @@ from users.serializers import (UserSerializer,
                                DoctorSerializer,
                                DoctorEditSerializer,
                                PatientSerializer,
-                               InformationSerializer)
+                               InformationSerializer,
+                               CIDSerializer)
 from users.permissions import RikangKeyPermission, IsDoctor, IsPatient, IsSMSVerified
 from users.sms import send_sms_code
 from qa.serializers import QuestionSerializer, StarredQuestionSerializer
@@ -188,6 +189,21 @@ class PatientServicesView(generics.ListAPIView):
     def get_queryset(self):
         patient = Patient.objects.get(user=self.request.user)
         return patient.orders.all()
+
+
+class NewCIDView(generics.CreateAPIView):
+
+    serializer_class = CIDSerializer
+
+
+class TestPushView(APIView):
+
+    def post(self, request):
+        msg = request.data['msg']
+        push.send_push_to_user(msg, request.user.id)
+
+        return Response()
+
 
 @staff_member_required
 def admin_verify_doctor(request, doctor_id):
