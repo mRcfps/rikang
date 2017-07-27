@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'users',
     'qa',
     'services',
+    'feedback',
 ]
 
 MIDDLEWARE = [
