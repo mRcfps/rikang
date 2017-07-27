@@ -46,13 +46,6 @@ class PatientAdmin(admin.ModelAdmin):
 
     phone_number.short_description = '手机号'
 
-
-class ClientIDAdmin(admin.ModelAdmin):
-    list_display = ('user', 'cid')
-
-
 admin.site.register(Phone, PhoneAdmin)
 admin.site.register(Doctor, DoctorAdmin)
 admin.site.register(Patient, PatientAdmin)
-admin.site.register(Information)
-admin.site.register(ClientID, ClientIDAdmin)
