@@ -39,17 +39,11 @@ urlpatterns = [
     ),
 
     # `POST` /users/new-cid
-    url(
-        r'^new-cid$',
-        views.NewCIDView.as_view(),
-        name='new-cid'
-    ),
-
-    url(
-        r'^test-push/$',
-        views.TestPushView.as_view(),
-        name='test-push'
-    ),
+    # url(
+    #     r'^new-cid$',
+    #     views.NewCIDView.as_view(),
+    #     name='new-cid'
+    # ),
 
     # `POST` /users/doctor/init
     url(

@@ -175,7 +175,7 @@ class DoctorNewCommentView(generics.CreateAPIView):
         doctor.ratings = (doctor.ratings * (comment_num - 1) + new_rating) / comment_num
         doctor.save()
 
-        push.send_push_to_user(
-            message="有位用户刚刚对您做出了评价。",
-            user_id=doctor.user.id
-        )
+        # push.send_push_to_user(
+        #     message="有位用户刚刚对您做出了评价。",
+        #     user_id=doctor.user.id
+        # )

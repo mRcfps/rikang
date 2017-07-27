@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import generics, status
 
-import push
+# import push
 
 from users.models import Phone, Doctor, Patient, Information
 from users.serializers import (UserSerializer,
@@ -191,18 +191,9 @@ class PatientServicesView(generics.ListAPIView):
         return patient.orders.all()
 
 
-class NewCIDView(generics.CreateAPIView):
+# class NewCIDView(generics.CreateAPIView):
 
-    serializer_class = CIDSerializer
-
-
-class TestPushView(APIView):
-
-    def post(self, request):
-        msg = request.data['msg']
-        response = push.send_push_to_user(msg, request.user.id)
-
-        return Response(response.json(), status=response.status_code)
+#     serializer_class = CIDSerializer
 
 
 @staff_member_required
@@ -218,9 +209,9 @@ def admin_notify_verified_doctor(request, doctor_id):
     doctor = get_object_or_404(Doctor, id=doctor_id)
     doctor.active = True
     doctor.save()
-    push.send_push_to_user(
-        message="恭喜您通过日康的医生审核！欢迎成为日康平台的一员！",
-        user_id=doctor.user.id
-    )
+    # push.send_push_to_user(
+    #     message="恭喜您通过日康的医生审核！欢迎成为日康平台的一员！",
+    #     user_id=doctor.user.id
+    # )
 
     return redirect('admin:users_doctor_changelist')
