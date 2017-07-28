@@ -45,13 +45,6 @@ urlpatterns = [
         name='hospital-detail'
     ),
 
-    # `GET` /home/hospitals/{hospital_id}/doctors/
-    url(
-        r'^hospitals/(?P<pk>\d+)/doctors/$',
-        views.HospitalDoctorsView.as_view(),
-        name='hospital-doctors'
-    ),
-
     # `GET` /home/doctors/
     url(
         r'^doctors/$',
