@@ -48,7 +48,7 @@ class QuestionListView(generics.ListAPIView):
                 question = Question.objects.get(id=result.meta['id'])
                 queryset.append(question)
 
-                return queryset
+            return queryset
 
 
 class NewQuestionView(generics.CreateAPIView):
