@@ -75,14 +75,15 @@ class UserTests(APITestCase):
     def test_change_password(self):
         """Ensure we can change password."""
         url = reverse('users:change-password')
-        data = {'username': 'test', 'password': 'newpassword'}
+        data = {'old_password': 'test', 'new_password': 'newpassword'}
         self.client.force_authenticate(user=self.user)
-        response = self.client.put(url, data, format='json')
+        response = self.client.post(url, data, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # Then let's login with the new password
         url = reverse('users:login')
+        data = {'username': 'test', 'password': 'newpassword'}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 

@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.models import User
 from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.hashers import check_password
 
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
@@ -52,13 +53,25 @@ class UserRegistrationView(generics.CreateAPIView):
     permission_classes = (RikangKeyPermission, IsSMSVerified)
 
 
-class UserChangePasswordView(generics.UpdateAPIView):
+class UserChangePasswordView(APIView):
     """Allow users to change their password with token auth."""
 
-    serializer_class = UserSerializer
+    def post(self, request):
+        user = request.user
+        try:
+            old_password = request.data['old_password']
+            new_password = request.data['new_password']
+        except KeyError:
+            return Response({'error': "表单格式错误"},
+                            status=status.HTTP_400_BAD_REQUEST)
 
-    def get_object(self):
-        return User.objects.get(id=self.request.user.id)
+        if check_password(old_password, user.password):
+            user.set_password(new_password)
+            user.save()
+            return Response({'changed': True})
+        else:
+            return Response({'error': "旧密码错误"},
+                            status=status.HTTP_403_FORBIDDEN)
 
 
 class RequestSmsCodeView(APIView):
