@@ -130,7 +130,7 @@ class Patient(models.Model):
     )
 
     user = models.OneToOneField(User, verbose_name='手机号')
-    name = models.CharField(default='unnamed', max_length=50, verbose_name='姓名')
+    name = models.CharField(default='小康', max_length=50, verbose_name='姓名')
     avatar = models.ImageField(upload_to='avatars/', blank=True, verbose_name='头像')
     sex = models.CharField(max_length=1, choices=SEX_CHOICES, default=UNKNOWN, verbose_name='性别')
     age = models.PositiveIntegerField(blank=True, null=True, verbose_name='年龄')
