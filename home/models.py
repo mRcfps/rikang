@@ -48,6 +48,7 @@ class Hospital(models.Model):
     name = models.CharField(max_length=50, verbose_name='名称')
     location = models.CharField(max_length=100, blank=True, verbose_name='地址')
     rank = models.CharField(choices=RANK_CHOICES, max_length=10, verbose_name='医院等级')
+    doctor_num = models.IntegerField(null=True, blank=True, verbose_name='医生人数')
     phone = models.IntegerField(verbose_name='电话')
     description = models.TextField(verbose_name='医院介绍', blank=True)
     photo = models.ImageField(upload_to='hospitals/', blank=True, verbose_name='图片')
@@ -58,9 +59,6 @@ class Hospital(models.Model):
 
     def __str__(self):
         return self.name
-
-    def doctor_num(self):
-        return self.doctors.count()
 
 
 class DoctorComment(models.Model):
