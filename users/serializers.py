@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from users.models import Doctor, Patient, Information, ClientID
+from users.models import Doctor, Patient, Information
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -54,10 +54,3 @@ class InformationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Information
         exclude = ('id', 'doctor')
-
-
-class CIDSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = ClientID
-        fields = ('user', 'cid')

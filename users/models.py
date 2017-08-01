@@ -2,6 +2,8 @@ import random
 from datetime import datetime
 
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import User
 
@@ -178,11 +180,7 @@ class FavoriteDoctor(models.Model):
         unique_together = ('patient', 'doctor')
 
 
-class ClientID(models.Model):
-
-    user = models.OneToOneField(User)
-    cid = models.CharField(max_length=50)
-
-    class Meta:
-        verbose_name = '个推ID'
-        verbose_name_plural = verbose_name
+@receiver(post_save, sender=Doctor)
+def create_new_info(sender, **kwargs):
+    doctor = kwargs.get('instance')
+    Information.objects.create(doctor=doctor)

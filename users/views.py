@@ -18,8 +18,7 @@ from users.serializers import (UserSerializer,
                                DoctorSerializer,
                                DoctorEditSerializer,
                                PatientSerializer,
-                               InformationSerializer,
-                               CIDSerializer)
+                               InformationSerializer)
 from users.permissions import RikangKeyPermission, IsDoctor, IsPatient, IsSMSVerified
 from users.sms import send_sms_code
 from qa.serializers import QuestionSerializer, StarredQuestionSerializer
