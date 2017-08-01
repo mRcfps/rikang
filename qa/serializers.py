@@ -54,10 +54,11 @@ class AnswerCommentDisplaySerializer(serializers.ModelSerializer):
 
     replier_name = serializers.CharField(source='replier.name')
     replier_avatar = serializers.SerializerMethodField()
+    replier_uid = serializers.IntegerField(source='replier.user.id')
 
     class Meta:
         model = AnswerComment
-        fields = ('id', 'replier_name', 'replier_avatar',
+        fields = ('id', 'replier_name', 'replier_avatar', 'replier_uid',
                   'reply_to', 'body', 'upvotes', 'created')
 
     def get_replier_avatar(self, comment):
