@@ -114,9 +114,6 @@ class DoctorInitView(generics.CreateAPIView):
     def perform_create(self, serializer):
         doctor = serializer.save(user=self.request.user)
 
-        # Create info model for this doctor
-        Information.objects.create(doctor=doctor)
-
 
 class DoctorProfileView(generics.RetrieveUpdateAPIView):
 
