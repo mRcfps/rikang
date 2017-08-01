@@ -13,7 +13,7 @@ from rest_framework import generics, status
 
 # import push
 
-from users.models import Phone, Doctor, Patient, Information
+from users.models import Phone, Doctor, Patient, Information, Income
 from users.serializers import (UserSerializer,
                                DoctorSerializer,
                                DoctorEditSerializer,
@@ -224,3 +224,22 @@ def admin_notify_verified_doctor(request, doctor_id):
     # )
 
     return redirect('admin:users_doctor_changelist')
+
+
+@staff_member_required
+def admin_dispatch_income(request, income_id):
+    income = get_object_or_404(Income, id=income_id)
+    doctor = income.doctor
+    context = {'doctor': doctor, 'income': income}
+
+    return render(request, 'users/dispatch_income.html', context)
+
+
+@staff_member_required
+def admin_confirm_dispatch(request, income_id):
+    income = get_object_or_404(Income, id=income_id)
+    income.gained += income.suspended
+    income.suspended = 0
+    income.save()
+
+    return redirect('admin:users_income_changelist')

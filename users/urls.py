@@ -115,8 +115,20 @@ urlpatterns = [
     ),
 
     url(
-        r'notify-verification/(?P<doctor_id>\d+)/$',
+        r'^notify-verification/(?P<doctor_id>\d+)/$',
         views.admin_notify_verified_doctor,
         name='notify-verification'
+    ),
+
+    url(
+        r'^income/(?P<income_id>\d+)/dispatch/$',
+        views.admin_dispatch_income,
+        name='dispatch-income',
+    ),
+
+    url(
+        r'^income/(?P<income_id>\d+)/confirm-dispatch$',
+        views.admin_confirm_dispatch,
+        name='confirm-dispatch'
     ),
 ]

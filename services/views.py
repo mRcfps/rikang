@@ -1,8 +1,10 @@
 import uuid
+from decimal import Decimal
 from datetime import datetime, timedelta
 
 from django.shortcuts import get_object_or_404
 from django.forms.models import model_to_dict
+from django.conf import settings
 
 from rest_framework import status, generics
 from rest_framework.views import APIView
@@ -81,8 +83,11 @@ class FinishOrderView(APIView):
     permission_classes = (IsAuthenticated, RikangKeyPermission, IsPatient)
 
     def post(self, request):
-        order = Order.objects.get(id=request.data['order_no'])
+        order = Order.objects.get(order_no=request.data['order_no'])
         consult = Consultation.objects.get(id=request.data['order_no'])
+
+        if order.status != Order.PAID:
+            return Response({'error': "订单状态错误"}, status=status.HTTP_400_BAD_REQUEST)
 
         if order.owner != request.user.patient:
             return Response({'error': "您无权操作此订单"}, status=status.HTTP_403_FORBIDDEN)
@@ -90,14 +95,17 @@ class FinishOrderView(APIView):
         if datetime.now() - consult.start < timedelta(days=1):
             return Response({'error': "尚未到结束订单的时间"}, status=status.HTTP_400_BAD_REQUEST)
 
+        # Change order status
         order.status = Order.FINISHED
         order.save()
 
-        doctor = order.service.doctor
-        doctor.order_num += 1
-        doctor.save()
+        # Change income stats
+        doctor = order.service_object.doctor
+        income = doctor.income
+        income.total += order.cost
+        income.suspended += order.cost * Decimal(1 - settings.BROKERAGE_RATIO)
+        income.save()
 
-        patient = order.service.patient
         # push.send_push_to_user(
         #     message='对{}医生的咨询已结束，请及时评价。'.format(order.service.doctor.name),
         #     user_id=patient.user.id

@@ -1,7 +1,7 @@
 from django.urls import reverse
 from django.contrib import admin
 
-from users.models import Phone, Doctor, Patient, Information
+from users.models import Phone, Doctor, Patient, Information, Income
 
 
 class PhoneAdmin(admin.ModelAdmin):
@@ -26,6 +26,7 @@ def verify_doctor(obj):
 
 verify_doctor.allow_tags = True
 
+
 class DoctorAdmin(admin.ModelAdmin):
 
     list_display = ('name', 'department', 'hospital', 'title', 'ratings',
@@ -46,7 +47,27 @@ class PatientAdmin(admin.ModelAdmin):
 
     phone_number.short_description = '手机号'
 
+
+def dispatch_income(obj):
+    if obj.suspended != 0:
+        return '<a href="{}">支付收入</a>'.format(
+            reverse('users:dispatch-income', args=[obj.id])
+        )
+
+dispatch_income.allow_tags = True
+
+
+class IncomeAdmin(admin.ModelAdmin):
+
+    list_display = ('doctor', 'total', 'gained',
+                    'suspended', dispatch_income)
+    search_fields = ('doctor',)
+
+    dispatch_income.short_description = ''
+
+
 admin.site.register(Phone, PhoneAdmin)
 admin.site.register(Doctor, DoctorAdmin)
 admin.site.register(Patient, PatientAdmin)
+admin.site.register(Income, IncomeAdmin)
 admin.site.register(Information)

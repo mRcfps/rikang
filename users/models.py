@@ -81,6 +81,7 @@ class Doctor(models.Model):
                                        upload_to='licenses/',
                                        verbose_name='医生执照')
     id_card = models.ImageField(null=True, blank=True, upload_to='idcards/', verbose_name='持证自拍')
+    wx_openid = models.CharField(max_length=50, null=True, blank=True, verbose_name='微信openid')
 
     # model managers
     objects = models.Manager()
@@ -178,6 +179,28 @@ class FavoriteDoctor(models.Model):
     class Meta:
         ordering = ('-created',)
         unique_together = ('patient', 'doctor')
+
+
+class Income(models.Model):
+
+    doctor = models.OneToOneField(Doctor, verbose_name='医生')
+    total = models.DecimalField(max_digits=10,
+                                decimal_places=2,
+                                default=0,
+                                verbose_name='平台总收入（元）')
+    gained = models.DecimalField(max_digits=10,
+                                 decimal_places=2,
+                                 default=0,
+                                 verbose_name='已获得收入（元）')
+    suspended = models.DecimalField(max_digits=5,
+                                    decimal_places=2,
+                                    default=0,
+                                    verbose_name='未分配收入（元）')
+
+    class Meta:
+        verbose_name = '医生收入'
+        verbose_name_plural = verbose_name
+        ordering = ('suspended',)
 
 
 @receiver(post_save, sender=Doctor)

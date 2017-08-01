@@ -189,3 +189,7 @@ CKEDITOR_CONFIGS = {
         ]
     },
 }
+
+# Rikang settings
+
+BROKERAGE_RATIO = 0.3
