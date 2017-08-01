@@ -5,6 +5,7 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User
 
 import departments
@@ -206,4 +207,7 @@ class Income(models.Model):
 @receiver(post_save, sender=Doctor)
 def create_new_info(sender, **kwargs):
     doctor = kwargs.get('instance')
-    Information.objects.create(doctor=doctor)
+    try:
+        info = doctor.information
+    except ObjectDoesNotExist:
+        Information.objects.create(doctor=doctor)

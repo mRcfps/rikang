@@ -140,7 +140,6 @@ class DoctorTests(APITestCase):
                 title='C',
                 active=True
             )
-            Information.objects.create(doctor=doctor)
 
         self.client = APIClient()
         self.client.force_authenticate(user=self.user)
