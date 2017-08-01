@@ -66,6 +66,13 @@ urlpatterns = [
         name='doctor-info'
     ),
 
+    # `GET` /users/doctor/services/
+    url(
+        r'^doctor/services/$',
+        views.DoctorServicesView.as_view(),
+        name='doctor-services'
+    ),
+
     # `GET``PUT` /users/patient/profile/
     url(
         r'^patient/profile/$',

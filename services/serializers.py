@@ -1,13 +1,21 @@
 from rest_framework import serializers
 
 from services.models import Order, Consultation
+from users.serializers import PatientSerializer
 
 
 class ConsultationSerializer(serializers.ModelSerializer):
 
+    patient = PatientSerializer()
+    status = serializers.SerializerMethodField()
+
     class Meta:
         model = Consultation
-        fields = ('doctor', 'patient')
+        fields = ('doctor', 'patient', 'status')
+
+    def get_status(self, consult):
+        order = Order.objects.get(order_no=consult.id)
+        return order.status
 
 
 class ConsultationOrderSerializer(serializers.ModelSerializer):
