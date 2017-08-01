@@ -18,7 +18,7 @@ class StarredQuestionSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(source='question.id')
     title = serializers.CharField(source='question.title')
     answer_num = serializers.IntegerField(source='question.answer_num')
-    created = serializers.DateField(source='question.created')
+    created = serializers.DateTimeField(source='question.created')
 
     class Meta:
         model = StarredQuestion
