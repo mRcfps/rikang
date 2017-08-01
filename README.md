@@ -47,13 +47,19 @@ Just follow the prompts and do whatever told to do.
 
 # How to initialize elasticsearch
 
-1. Enter the following command to start elasticsearch server at localhost:9200:
+1. Create a new directory called `plugins`.
+
+```bash
+(venv)$ mkdir elasticsearch/plugins
+```
+
+2. Enter the following command to start elasticsearch server at localhost:9200:
 
 ```bash
 (venv)$ elasticsearch/bin/elasticsearch
 ```
 
-2. Open another terminal window and run command:
+3. Open another terminal window and run command:
 
 ```bash
 (venv)$ python manage.py indexdata
