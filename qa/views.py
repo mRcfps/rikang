@@ -28,6 +28,7 @@ class QuestionListView(generics.ListAPIView):
         department = self.request.query_params.get('dep', None)
         order = self.request.query_params.get('order', None)
         search_keyword = self.request.query_params.get('search', None)
+        solved = self.request.query_params.get('solved', None)
 
         if search_keyword is None:
             queryset = Question.objects.all()
@@ -37,6 +38,9 @@ class QuestionListView(generics.ListAPIView):
 
             if order is not None:
                 queryset = queryset.order_by(order)
+
+            if solved is not None:
+                queryset = queryset.filter(solved=solved)
 
             return queryset
         else:
