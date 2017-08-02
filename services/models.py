@@ -70,9 +70,9 @@ class Consultation(models.Model):
 
 class Comment(models.Model):
 
-    patient = models.ForeignKey('users.Patient', related_name='comments', verbose_name='全部评价')
-    doctor = models.ForeignKey('users.Doctor', related_name='comments', verbose_name='全部评价')
-    order = models.OneToOneField('services.order', null=True, blank=True, verbose_name='评价订单')
+    patient = models.ForeignKey('users.Patient', related_name='comments', verbose_name='患者')
+    doctor = models.ForeignKey('users.Doctor', related_name='comments', verbose_name='医生')
+    order = models.OneToOneField('services.order', null=True, blank=True, verbose_name='订单')
     anonymous = models.BooleanField(default=False, verbose_name='匿名回答')
     ratings = models.PositiveIntegerField(validators=[MaxValueValidator(5)], verbose_name='评分')
     created = models.DateField(auto_now_add=True, verbose_name='创建时间')
