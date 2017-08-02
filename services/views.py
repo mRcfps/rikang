@@ -32,6 +32,7 @@ class NewOrderView(APIView):
                                                       doctor=doctor,
                                                       id=uuid.uuid4().hex)
                 order = Order.objects.create(owner=request.user.patient,
+                                             provider=doctor,
                                              service_object=consult,
                                              cost=doctor.consult_price)
 

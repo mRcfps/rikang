@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from home.models import Post, Hospital, DoctorComment
+from home.models import Post, Hospital
 from qa.models import Answer
 from users.serializers import PatientSerializer
 from users.models import FavoritePost, FavoriteDoctor
@@ -99,4 +99,4 @@ class NewCommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = DoctorComment
-        fields = ('anonymous', 'ratings', 'body')
+        fields = ('anonymous', 'ratings', 'body', 'order_no')

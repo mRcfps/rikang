@@ -42,6 +42,7 @@ class OrderTests(APITestCase):
             id=uuid.uuid4().hex
         )
         self.order = Order.objects.create(owner=self.patient,
+                                          provider=self.doctor,
                                           service_object=self.consult,
                                           cost=self.doctor.consult_price)
 
