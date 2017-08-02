@@ -95,7 +95,7 @@ class CommentDisplaySerializer(serializers.ModelSerializer):
         fields = ('id', 'patient', 'anonymous', 'ratings', 'created', 'body')
 
 
-class NewCommentDisplaySerializer(serializers.ModelSerializer):
+class NewCommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = DoctorComment

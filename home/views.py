@@ -15,7 +15,7 @@ from home.serializers import (PostListSerializer,
                               HospitalDetailSerializer,
                               DoctorAnswerSerializer,
                               CommentDisplaySerializer,
-                              NewCommentDisplaySerializer)
+                              NewCommentSerializer)
 
 
 class PostListView(generics.ListAPIView):
@@ -153,7 +153,7 @@ class DoctorCommentsView(generics.ListAPIView):
 class DoctorNewCommentView(generics.CreateAPIView):
 
     queryset = DoctorComment.objects.all()
-    serializer_class = NewCommentDisplaySerializer
+    serializer_class = NewCommentSerializer
 
     def perform_create(self, serializer):
         doctor = get_object_or_404(Doctor, id=self.kwargs['pk'], active=True)
