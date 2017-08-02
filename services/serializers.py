@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from services.models import Order, Consultation
+from services.models import Order, Consultation, Comment
 from users.serializers import PatientSerializer
 
 
@@ -31,3 +31,10 @@ class ConsultationOrderSerializer(serializers.ModelSerializer):
 
     def get_order_no(self, order):
         return order.order_no.hex
+
+
+class NewCommentSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Comment
+        fields = ('anonymous', 'ratings', 'body', 'order')

@@ -93,11 +93,4 @@ urlpatterns = [
         views.DoctorCommentsView.as_view(),
         name='doctor-comments'
     ),
-
-    # `POST` /home/doctors/{doctor_id}/comments/new
-    url(
-        r'^doctors/(?P<pk>\d+)/comments/new$',
-        views.DoctorNewCommentView.as_view(),
-        name='doctor-new-comment'
-    ),
 ]

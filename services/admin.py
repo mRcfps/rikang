@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from services.models import Order, Consultation, Summary
+from services.models import Order, Consultation, Summary, Comment
 
 
 class OrderAdmin(admin.ModelAdmin):
@@ -19,6 +19,12 @@ class SummaryAdmin(admin.ModelAdmin):
 
     list_display = ('summary_type', 'charges_amount', 'charges_count', 'created')
 
+
+class CommentAdmin(admin.ModelAdmin):
+
+    list_display = ('patient', 'doctor', 'ratings', 'created')
+
 admin.site.register(Order, OrderAdmin)
 admin.site.register(Consultation, ConsultationAdmin)
 admin.site.register(Summary, SummaryAdmin)
+admin.site.register(Comment, CommentAdmin)

@@ -14,7 +14,8 @@ from rest_framework.permissions import IsAuthenticated
 # import push
 
 from services import pay, types, events
-from services.models import Order, Consultation, Summary
+from services.serializers import NewCommentSerializer
+from services.models import Order, Consultation, Summary, Comment
 from users.models import Patient, Doctor
 from users.permissions import IsPatient, IsDoctor, RikangKeyPermission, IsOwnerOrReadOnly
 
@@ -113,6 +114,27 @@ class FinishOrderView(APIView):
         # )
 
         return Response({'finished': True})
+
+
+class CommentView(generics.CreateAPIView):
+
+    queryset = Comment.objects.all()
+    serializer_class = NewCommentSerializer
+
+    def perform_create(self, serializer):
+        doctor = get_object_or_404(Doctor,
+                                   id=self.request.data['doctor'],
+                                   active=True)
+        order = Order.objects.get(order_no=self.request.data['order_no'])
+        serializer.save(patient=self.request.user.patient,
+                        doctor=doctor,
+                        order=order)
+
+        # calculate new rating for this doctor
+        new_rating = serializer.validated_data['ratings']
+        comment_num = doctor.comments.count()
+        doctor.ratings = (doctor.ratings * (comment_num - 1) + new_rating) / comment_num
+        doctor.save()
 
 
 class PayView(APIView):

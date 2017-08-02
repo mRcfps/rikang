@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import MaxValueValidator
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 
@@ -25,6 +26,7 @@ class Order(models.Model):
     order_no = models.UUIDField(editable=False,
                                 verbose_name='订单编号')
     owner = models.ForeignKey('users.patient', related_name='orders', verbose_name='顾客')
+    provider = models.ForeignKey('users.doctor', related_name='orders', verbose_name='服务提供者')
     cost = models.DecimalField(max_digits=5, decimal_places=2, editable=False, verbose_name='费用')
     status = models.CharField(choices=STATUS_CHOICES,
                               max_length=1,
@@ -44,6 +46,9 @@ class Order(models.Model):
         verbose_name = '订单'
         verbose_name_plural = verbose_name
 
+    def __str__(self):
+        return '订单{}'.format(self.order_no)
+
 
 class Consultation(models.Model):
 
@@ -61,6 +66,24 @@ class Consultation(models.Model):
         ordering = ('-created',)
         verbose_name = '在线咨询'
         verbose_name_plural = verbose_name
+
+
+class Comment(models.Model):
+
+    patient = models.ForeignKey('users.Patient', related_name='comments', verbose_name='全部评价')
+    doctor = models.ForeignKey('users.Doctor', related_name='comments', verbose_name='全部评价')
+    order = models.OneToOneField('services.order', null=True, blank=True, verbose_name='评价订单')
+    anonymous = models.BooleanField(default=False, verbose_name='匿名回答')
+    ratings = models.PositiveIntegerField(validators=[MaxValueValidator(5)], verbose_name='评分')
+    created = models.DateField(auto_now_add=True, verbose_name='创建时间')
+    body = models.TextField(verbose_name='评论内容')
+
+    class Meta:
+        verbose_name = '订单评论'
+        verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return '{}对{}医生的评价'.format(self.patient.name, self.doctor.name)
 
 
 class Summary(models.Model):

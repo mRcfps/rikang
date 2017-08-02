@@ -66,11 +66,11 @@ urlpatterns = [
         name='doctor-info'
     ),
 
-    # `GET` /users/doctor/services/
+    # `GET` /users/doctor/orders/
     url(
-        r'^doctor/services/$',
-        views.DoctorServicesView.as_view(),
-        name='doctor-services'
+        r'^doctor/orders/$',
+        views.DoctorOrdersView.as_view(),
+        name='doctor-orders'
     ),
 
     # `GET``PUT` /users/patient/profile/

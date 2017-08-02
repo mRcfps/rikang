@@ -138,14 +138,14 @@ class DoctorInfoView(generics.RetrieveUpdateAPIView):
         return Information.objects.get(doctor=doctor)
 
 
-class DoctorServicesView(generics.ListAPIView):
+class DoctorOrdersView(generics.ListAPIView):
 
-    serializer_class = ConsultationSerializer
+    serializer_class = ConsultationOrderSerializer
     pagination_class = None
 
     def get_queryset(self):
         doctor = Doctor.objects.get(user=self.request.user)
-        return doctor.consultations.all()
+        return doctor.orders.all()
 
 
 class PatientProfileView(generics.RetrieveUpdateAPIView):

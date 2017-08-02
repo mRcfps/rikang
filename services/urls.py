@@ -29,6 +29,11 @@ urlpatterns = [
         name='finish-order'
     ),
     url(
+        r'^comment$',
+        views.CommentView.as_view(),
+        name='comment'
+    ),
+    url(
         r'^refund$',
         views.RefundView.as_view(),
         name='refund'

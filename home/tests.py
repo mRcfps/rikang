@@ -19,10 +19,6 @@ TEST_HOSPITAL_NUM = 30
 # Should be larger than PAGE_SIZE
 TEST_DOCTOR_NUM = 40
 
-# Number of doctor-comments for test
-# Should be larger than PAGE_SIZE
-TEST_COMMENT_NUM = 50
-
 
 class PostTests(APITestCase):
     """Test suite for the post model."""
@@ -204,55 +200,3 @@ class DoctorTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), TEST_DOCTOR_NUM)
-
-
-class DoctorCommentTests(APITestCase):
-    """Test suite for the DoctorComment model."""
-
-    def setUp(self):
-        """Initialize a doctor and a patient."""
-        doctor_user = User.objects.create_user(username='test_doctor', password='test')
-        self.doctor = Doctor.objects.create(
-            user=doctor_user,
-            name='test_doctor',
-            department='GYN',
-            hospital='test',
-            start='2000-01-01',
-            title='A',
-            active=True
-        )
-
-        patient_user = User.objects.create_user(username='test_patient', password='test')
-        self.patient = Patient.objects.create(user=patient_user, name='test_patient')
-
-        # Add comments to the doctor just created
-        for _ in range(TEST_COMMENT_NUM):
-            DoctorComment.objects.create(
-                patient=self.patient,
-                doctor=self.doctor,
-                ratings=5,
-                body='test'
-            )
-
-        self.client = APIClient()
-        self.client.force_authenticate(user=patient_user)
-
-    def test_get_comment_list(self):
-        """Ensure we can get all comments of a given doctor."""
-        url = reverse('home:doctor-comments', args=[self.doctor.id])
-        response = self.client.get(url)
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['count'], TEST_COMMENT_NUM)
-
-    def test_add_new_comment(self):
-        """Ensure we can add a new comment to a doctor."""
-        url = reverse('home:doctor-new-comment', args=[self.doctor.id])
-        data = {
-            'ratings': 5,
-            'body': 'test',
-        }
-        response = self.client.post(url, data)
-
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertNotEqual(DoctorComment.objects.count(), TEST_COMMENT_NUM)

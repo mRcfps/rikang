@@ -4,6 +4,7 @@ from home.models import Post, Hospital
 from qa.models import Answer
 from users.serializers import PatientSerializer
 from users.models import FavoritePost, FavoriteDoctor
+from services.models import Comment
 
 
 class PostListSerializer(serializers.ModelSerializer):
@@ -91,12 +92,5 @@ class CommentDisplaySerializer(serializers.ModelSerializer):
     patient = PatientSerializer()
 
     class Meta:
-        model = DoctorComment
+        model = Comment
         fields = ('id', 'patient', 'anonymous', 'ratings', 'created', 'body')
-
-
-class NewCommentSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = DoctorComment
-        fields = ('anonymous', 'ratings', 'body', 'order_no')
