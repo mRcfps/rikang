@@ -17,12 +17,12 @@ from services import pay, types, events
 from services.serializers import NewCommentSerializer
 from services.models import Order, Consultation, Summary, Comment
 from users.models import Patient, Doctor
-from users.permissions import IsPatient, IsDoctor, RikangKeyPermission, IsOwnerOrReadOnly
+from users.permissions import IsPatient, IsDoctor, IsOwnerOrReadOnly
 
 
 class NewOrderView(APIView):
 
-    permission_classes = (IsAuthenticated, RikangKeyPermission, IsPatient)
+    permission_classes = (IsAuthenticated, IsPatient)
 
     def post(self, request):
         try:
@@ -57,7 +57,7 @@ class NewOrderView(APIView):
 
 class AcceptOrderView(APIView):
 
-    permission_classes = (IsAuthenticated, RikangKeyPermission, IsDoctor)
+    permission_classes = (IsAuthenticated, IsDoctor)
 
     def post(self, request):
         order = Order.objects.get(id=request.data['order_no'])
@@ -82,7 +82,7 @@ class AcceptOrderView(APIView):
 
 class FinishOrderView(APIView):
 
-    permission_classes = (IsAuthenticated, RikangKeyPermission, IsPatient)
+    permission_classes = (IsAuthenticated, IsPatient)
 
     def post(self, request):
         order = Order.objects.get(order_no=request.data['order_no'])
@@ -139,7 +139,7 @@ class CommentView(generics.CreateAPIView):
 
 class PayView(APIView):
 
-    permission_classes = (IsAuthenticated, RikangKeyPermission, IsOwnerOrReadOnly)
+    permission_classes = (IsAuthenticated, IsOwnerOrReadOnly)
 
     def post(self, request):
         response, created = pay.create_charge(
@@ -163,7 +163,7 @@ class PayView(APIView):
 
 class CancelView(APIView):
 
-    permission_classes = (IsAuthenticated, RikangKeyPermission, IsOwnerOrReadOnly)
+    permission_classes = (IsAuthenticated, IsOwnerOrReadOnly)
 
     def post(self, request):
         order = get_object_or_404(Order, order_no=request.data['order_no'])
@@ -180,7 +180,7 @@ class CancelView(APIView):
 
 class RefundView(APIView):
 
-    permission_classes = (IsAuthenticated, RikangKeyPermission, IsOwnerOrReadOnly)
+    permission_classes = (IsAuthenticated, IsOwnerOrReadOnly)
 
     def post(self, request):
         order = get_object_or_404(Order, order_no=request.data['order_no'])

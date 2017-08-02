@@ -5,17 +5,6 @@ from rest_framework import permissions
 
 from users.models import Phone, Patient, Doctor
 
-RIKANG_KEY = 'powerformer'
-
-
-class RikangKeyPermission(permissions.BasePermission):
-    """Global permission check for unknown requests."""
-
-    def has_permission(self, request, view):
-        return True
-        # uncomment this in production environment!
-        # return request.META.get('HTTP_RIKANG_KEY') == RIKANG_KEY
-
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
     """

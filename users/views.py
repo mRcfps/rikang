@@ -6,7 +6,7 @@ from django.contrib.auth.hashers import check_password
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.serializers import AuthTokenSerializer
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import generics, status
@@ -20,7 +20,10 @@ from users.serializers import (UserSerializer,
                                PatientSerializer,
                                InformationSerializer,
                                IncomeSerializer)
-from users.permissions import RikangKeyPermission, IsDoctor, IsPatient, IsSMSVerified
+from users.permissions import (IsDoctor,
+                               IsPatient,
+                               IsSMSVerified,
+                               IsOwnerOrReadOnly)
 from users.sms import send_sms_code
 from qa.serializers import QuestionSerializer, StarredQuestionSerializer
 from home.serializers import FavoritePostSerializer, FavoriteDoctorSerializer
@@ -32,7 +35,7 @@ class UserLoginView(APIView):
 
     serializer_class = AuthTokenSerializer
     authentication_classes = []
-    permission_classes = (RikangKeyPermission,)
+    permission_classes = (AllowAny,)
 
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
@@ -51,7 +54,7 @@ class UserRegistrationView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     authentication_classes = []
-    permission_classes = (RikangKeyPermission, IsSMSVerified)
+    permission_classes = (IsSMSVerified,)
 
 
 class UserChangePasswordView(APIView):
@@ -78,7 +81,7 @@ class UserChangePasswordView(APIView):
 class RequestSmsCodeView(APIView):
 
     authentication_classes = []
-    permission_classes = (RikangKeyPermission,)
+    permission_classes = (AllowAny,)
 
     def post(self, request):
         phone, created = Phone.objects.get_or_create(number=request.data['phone'])
@@ -95,7 +98,7 @@ class RequestSmsCodeView(APIView):
 class VerifySmsCodeView(APIView):
 
     authentication_classes = []
-    permission_classes = (RikangKeyPermission,)
+    permission_classes = (AllowAny,)
 
     def post(self, request):
         phone = get_object_or_404(Phone, number=request.data['phone'])
@@ -119,6 +122,8 @@ class DoctorInitView(generics.CreateAPIView):
 
 class DoctorProfileView(generics.RetrieveUpdateAPIView):
 
+    permission_classes = (IsAuthenticated, IsOwnerOrReadOnly)
+
     def get_object(self):
         return Doctor.objects.get(user=self.request.user)
 
@@ -133,6 +138,7 @@ class DoctorProfileView(generics.RetrieveUpdateAPIView):
 class DoctorInfoView(generics.RetrieveUpdateAPIView):
 
     serializer_class = InformationSerializer
+    permission_classes = (IsAuthenticated, IsOwnerOrReadOnly)
 
     def get_object(self):
         doctor = Doctor.objects.get(user=self.request.user)
@@ -142,6 +148,7 @@ class DoctorInfoView(generics.RetrieveUpdateAPIView):
 class DoctorOrdersView(generics.ListAPIView):
 
     serializer_class = ConsultationOrderSerializer
+    permission_classes = (IsAuthenticated, IsDoctor)
     pagination_class = None
 
     def get_queryset(self):
@@ -152,6 +159,7 @@ class DoctorOrdersView(generics.ListAPIView):
 class DoctorIncomeView(generics.RetrieveAPIView):
 
     serializer_class = IncomeSerializer
+    permission_classes = (IsAuthenticated, IsDoctor)
 
     def get_object(self):
         doctor = self.request.user.doctor
@@ -162,6 +170,7 @@ class DoctorIncomeView(generics.RetrieveAPIView):
 class PatientProfileView(generics.RetrieveUpdateAPIView):
 
     serializer_class = PatientSerializer
+    permission_classes = (IsAuthenticated, IsOwnerOrReadOnly)
 
     def get_object(self):
         profile, created = Patient.objects.get_or_create(user=self.request.user)
@@ -172,7 +181,7 @@ class PatientQuestionsView(generics.ListAPIView):
 
     serializer_class = QuestionSerializer
     pagination_class = None
-    permission_classes = (IsAuthenticated, RikangKeyPermission, IsPatient)
+    permission_classes = (IsAuthenticated, IsPatient)
 
     def get_queryset(self):
         patient = Patient.objects.get(user=self.request.user)
@@ -183,7 +192,7 @@ class PatientStarredQuestionsView(generics.ListAPIView):
 
     serializer_class = StarredQuestionSerializer
     pagination_class = None
-    permission_classes = (IsAuthenticated, RikangKeyPermission, IsPatient)
+    permission_classes = (IsAuthenticated, IsPatient)
 
     def get_queryset(self):
         patient = Patient.objects.get(user=self.request.user)
@@ -194,7 +203,7 @@ class PatientFavDoctorsView(generics.ListAPIView):
 
     serializer_class = FavoriteDoctorSerializer
     pagination_class = None
-    permission_classes = (IsAuthenticated, RikangKeyPermission, IsPatient)
+    permission_classes = (IsAuthenticated, IsPatient)
 
     def get_queryset(self):
         patient = Patient.objects.get(user=self.request.user)
@@ -204,7 +213,7 @@ class PatientFavDoctorsView(generics.ListAPIView):
 class PatientFavPostsView(generics.ListAPIView):
 
     serializer_class = FavoritePostSerializer
-    permission_classes = (IsAuthenticated, RikangKeyPermission, IsPatient)
+    permission_classes = (IsAuthenticated, IsPatient)
 
     def get_queryset(self):
         patient = Patient.objects.get(user=self.request.user)
@@ -214,7 +223,7 @@ class PatientFavPostsView(generics.ListAPIView):
 class PatientServicesView(generics.ListAPIView):
 
     serializer_class = ConsultationOrderSerializer
-    permission_classes = (IsAuthenticated, RikangKeyPermission, IsPatient)
+    permission_classes = (IsAuthenticated, IsPatient)
     pagination_class = None
 
     def get_queryset(self):

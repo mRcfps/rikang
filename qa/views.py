@@ -17,7 +17,7 @@ from qa.serializers import (QuestionSerializer,
                             AnswerCommentDisplaySerializer,
                             NewAnswerCommentSerializer)
 from users.models import Patient, StarredQuestion
-from users.permissions import RikangKeyPermission, IsOwnerOrReadOnly, IsDoctor, IsPatient
+from users.permissions import IsOwnerOrReadOnly, IsDoctor, IsPatient
 
 
 class QuestionListView(generics.ListAPIView):
@@ -59,7 +59,7 @@ class NewQuestionView(generics.CreateAPIView):
 
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer
-    permission_classes = (IsAuthenticated, RikangKeyPermission, IsPatient)
+    permission_classes = (IsAuthenticated, IsPatient)
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user.patient)
@@ -69,7 +69,7 @@ class QuestionAddImageView(generics.CreateAPIView):
 
     queryset = QuestionImage.objects.all()
     serializer_class = QuestionImageSerializer
-    permission_classes = (IsAuthenticated, RikangKeyPermission, IsPatient)
+    permission_classes = (IsAuthenticated, IsPatient)
 
     def perform_create(self, serializer):
         question = Question.objects.get(id=self.kwargs['pk'])
@@ -80,7 +80,7 @@ class QuestionDetailView(generics.RetrieveUpdateDestroyAPIView):
 
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer
-    permission_classes = (IsAuthenticated, RikangKeyPermission, IsOwnerOrReadOnly)
+    permission_classes = (IsAuthenticated, IsOwnerOrReadOnly)
 
 
 class QuestionImageListView(generics.ListAPIView):
@@ -95,7 +95,7 @@ class QuestionImageListView(generics.ListAPIView):
 
 class QuestionStarView(APIView):
 
-    permission_classes = (IsAuthenticated, RikangKeyPermission, IsPatient)
+    permission_classes = (IsAuthenticated, IsPatient)
 
     def get(self, request, pk):
         question = Question.objects.get(id=pk)
@@ -114,7 +114,7 @@ class QuestionStarView(APIView):
 
 class QuestionUnstarView(APIView):
 
-    permission_classes = (IsAuthenticated, RikangKeyPermission, IsPatient)
+    permission_classes = (IsAuthenticated, IsPatient)
 
     def get(self, request, pk):
         question = Question.objects.get(id=pk)
@@ -160,7 +160,7 @@ class AnswersListView(generics.ListAPIView):
 class NewAnswerView(generics.CreateAPIView):
 
     serializer_class = AnswerEditSerializer
-    permission_classes = (IsAuthenticated, RikangKeyPermission, IsDoctor)
+    permission_classes = (IsAuthenticated, IsDoctor)
 
     def perform_create(self, serializer):
         question = Question.objects.get(id=self.kwargs['pk'])
@@ -179,7 +179,7 @@ class NewAnswerView(generics.CreateAPIView):
 class AnswersDetailView(generics.RetrieveUpdateAPIView):
 
     queryset = Answer.objects.all()
-    permission_classes = (IsAuthenticated, RikangKeyPermission, IsOwnerOrReadOnly)
+    permission_classes = (IsAuthenticated, IsOwnerOrReadOnly)
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
