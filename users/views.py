@@ -18,7 +18,8 @@ from users.serializers import (UserSerializer,
                                DoctorSerializer,
                                DoctorEditSerializer,
                                PatientSerializer,
-                               InformationSerializer)
+                               InformationSerializer,
+                               IncomeSerializer)
 from users.permissions import RikangKeyPermission, IsDoctor, IsPatient, IsSMSVerified
 from users.sms import send_sms_code
 from qa.serializers import QuestionSerializer, StarredQuestionSerializer
@@ -146,6 +147,16 @@ class DoctorOrdersView(generics.ListAPIView):
     def get_queryset(self):
         doctor = Doctor.objects.get(user=self.request.user)
         return doctor.orders.all()
+
+
+class DoctorIncomeView(generics.RetrieveAPIView):
+
+    serializer_class = IncomeSerializer
+
+    def get_object(self):
+        doctor = self.request.user.doctor
+        income, created = Income.objects.get_or_create(doctor=doctor)
+        return income
 
 
 class PatientProfileView(generics.RetrieveUpdateAPIView):

@@ -205,9 +205,11 @@ class Income(models.Model):
 
 
 @receiver(post_save, sender=Doctor)
-def create_new_info(sender, **kwargs):
+def create_info_and_income(sender, **kwargs):
     doctor = kwargs.get('instance')
     try:
         info = doctor.information
+        income = doctor.income
     except ObjectDoesNotExist:
         Information.objects.create(doctor=doctor)
+        Income.objects.create(doctor=doctor)
