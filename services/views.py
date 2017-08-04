@@ -20,6 +20,16 @@ from users.models import Patient, Doctor
 from users.permissions import IsPatient, IsDoctor, IsOwnerOrReadOnly
 
 
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+
+    return ip
+
+
 class NewOrderView(APIView):
 
     permission_classes = (IsAuthenticated, IsPatient)
@@ -147,7 +157,7 @@ class PayView(APIView):
             cost=request.data['cost'],
             order_no=request.data['order_no'],
             channel=request.data['channel'],
-            client_ip=request.data['client_ip']
+            client_ip=get_client_ip(request)
         )
 
         if created:
@@ -240,3 +250,9 @@ class WebhooksView(APIView):
             return Response(status=status.HTTP_200_OK)
         else:
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class TestIPView(APIView):
+
+    def get(self, request):
+        return Response({'ip': get_client_ip(request)})

@@ -43,4 +43,9 @@ urlpatterns = [
         views.WebhooksView.as_view(),
         name='webhooks'
     ),
+    url(
+        r'^test-ip/$',
+        views.TestIPView.as_view(),
+        name='test-ip'
+    ),
 ]
