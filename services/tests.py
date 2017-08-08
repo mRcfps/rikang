@@ -1,4 +1,5 @@
 import uuid
+from datetime import timedelta, datetime
 
 from django.urls import reverse
 from django.contrib.auth.models import User
@@ -43,6 +44,7 @@ class OrderTests(APITestCase):
         self.consult = Consultation.objects.create(
             patient=self.patient,
             doctor=self.doctor,
+            start=datetime.now(),
             id=uuid.uuid4().hex
         )
         self.order = Order.objects.create(owner=self.patient,
@@ -54,6 +56,7 @@ class OrderTests(APITestCase):
         """Ensure we can create a new consult order."""
         url = reverse('services:new-order')
         data = {'type': 'C', 'patient': self.patient.id, 'doctor': self.doctor.id}
+        self.client.force_authenticate(user=self.patient_user)
         response = self.client.post(url, data)
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -64,6 +67,7 @@ class OrderTests(APITestCase):
         """Ensure we can block orders with unknown types."""
         url = reverse('services:new-order')
         bad_data = {'type': 'A', 'patient': self.patient.id, 'doctor': self.doctor.id}
+        self.client.force_authenticate(user=self.patient_user)
         response = self.client.post(url, bad_data)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -72,6 +76,7 @@ class OrderTests(APITestCase):
         """Ensure we can block orders with some fields missing."""
         url = reverse('services:new-order')
         bad_data = {'type': 'C', 'patient': self.patient.id}
+        self.client.force_authenticate(user=self.patient_user)
         response = self.client.post(url, bad_data)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -86,14 +91,31 @@ class OrderTests(APITestCase):
             'channel': 'alipay',
             'client_ip': '192.168.0.238',
         }
+        self.client.force_authenticate(user=self.patient_user)
         response = self.client.post(url, data)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_accept_order(self):
+        """Ensure a doctor can accept a paid order."""
+        self.order.status = Order.PAID
+        self.order.save()
+        url = reverse('services:accept-order')
+        data = {'order_no': self.order.order_no}
+        self.client.force_authenticate(user=self.doctor_user)
+        response = self.client.post(url, data)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # check if the test order's status has switched to UNDERWAY
+        test_order = Order.objects.get(order_no=self.order.order_no)
+        self.assertEqual(test_order.status, Order.UNDERWAY)
 
     def test_cancel_order(self):
         """Ensure we can cancel an order."""
         url = reverse('services:cancel')
         data = {'order_no': self.order.order_no}
+        self.client.force_authenticate(user=self.patient_user)
         response = self.client.post(url, data)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -108,9 +130,31 @@ class OrderTests(APITestCase):
         self.order.save()
         url = reverse('services:cancel')
         data = {'order_no': self.order.order_no}
+        self.client.force_authenticate(user=self.patient_user)
         response = self.client.post(url, data)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_finish_order(self):
+        """Ensure we can finish an order."""
+        self.order.status = Order.UNDERWAY
+        self.order.save()
+
+        # rewind a day earlier to pass time check
+        self.consult.start -= timedelta(days=2)
+        self.consult.save()
+
+        url = reverse('services:finish-order')
+        data = {'order_no': self.order.order_no}
+        self.client.force_authenticate(user=self.patient_user)
+        response = self.client.post(url, data)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Check if the order's status is FINISHED
+        test_order = Order.objects.get(order_no=self.order.order_no)
+        test_consult = Consultation.objects.get(id=self.consult.id)
+        self.assertEqual(test_order.status, Order.FINISHED)
 
     def test_add_new_comment(self):
         """Ensure we can add a new comment to an order."""
@@ -121,6 +165,7 @@ class OrderTests(APITestCase):
             'body': 'test',
             'order_no': self.order.order_no,
         }
+        self.client.force_authenticate(user=self.patient_user)
         response = self.client.post(url, data)
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
