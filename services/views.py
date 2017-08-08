@@ -12,8 +12,9 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
 # import push
+import pay
 
-from services import pay, types, events
+from services import types, events
 from services.serializers import NewCommentSerializer
 from services.models import Order, Consultation, Summary, Comment
 from users.models import Patient, Doctor

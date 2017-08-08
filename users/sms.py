@@ -1,11 +1,13 @@
 import os
 import random
 
+import keys
+
 from users.yunpian import ClientV2
 
 COMPANY_NAME = '日康在线'
 
-API_KEY = 'c7bca9097e985a7ca346707c85e61b8a'
+API_KEY = keys.SMS_API_KEY
 
 
 def send_sms_code(phone_number, sms_code):

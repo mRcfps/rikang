@@ -1,15 +1,16 @@
 import pingpp
+import keys
 
 from services.types import SERVICE_NAME, SERVICE_DESCRIPTION
-
-# api_key 获取方式：登录 [Dashboard](https://dashboard.pingxx.com)->点击管理平台右上角公司名称->开发信息-> Secret Key
-API_KEY = 'sk_test_WvLCG0abD088TWrD84arP0CO'
 
 # app_id 获取方式：登录 [Dashboard](https://dashboard.pingxx.com)->点击你创建的应用->应用首页->应用 ID(App ID)
 APP_ID = 'app_mjv1K0SWTGWTvn54'
 
 # 设置 API Key
-pingpp.api_key = API_KEY
+pingpp.api_key = keys.PAY_API_KEY
+
+# 设置请求签名私钥
+pingpp.private_key_path = 'rsa_private_key.pem'
 
 '''
   设置请求签名密钥，密钥对需要你自己用 openssl 工具生成，如何生成可以参考帮助中心：https://help.pingxx.com/article/123161；
