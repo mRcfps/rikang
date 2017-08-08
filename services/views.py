@@ -241,12 +241,14 @@ class WebhooksView(APIView):
             order.save()
             return Response(status=status.HTTP_200_OK)
         elif request.data['type'].startswith('summary'):
+            summary_from = datetime.fromtimestamp(event_obj['summary_from'])
+            summary_to = datetime.fromtimestamp(event_obj['summary_to'])
             Summary.objects.create(
                 summary_type=request.data['type'],
                 charges_amount=event_obj['charges_amount'],
                 charges_count=event_obj['charges_count'],
-                summary_from=datetime.fromtimestamp(event_obj['summary_from']),
-                summary_to=datetime.fromtimestamp(event_obj['summary_to'])
+                summary_from=summary_from.replace(second=0),
+                summary_to=summary_to.replace(second=0)
             )
             return Response(status=status.HTTP_200_OK)
         else:

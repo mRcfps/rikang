@@ -94,8 +94,8 @@ class Summary(models.Model):
         (events.MONTHLY_SUMMARY, "每月总结"),
     )
 
-    summary_type = models.CharField(choices=TYPE_CHOICES, max_length=20, verbose_name="总结类型")
-    charges_amount = models.DecimalField(max_digits=5,
+    summary_type = models.CharField(choices=TYPE_CHOICES, max_length=30, verbose_name="总结类型")
+    charges_amount = models.DecimalField(max_digits=10,
                                          decimal_places=2,
                                          verbose_name='交易金额（元）')
     charges_count = models.PositiveIntegerField(verbose_name='交易量（笔）')
