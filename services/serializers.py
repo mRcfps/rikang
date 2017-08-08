@@ -11,7 +11,7 @@ class ConsultationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Consultation
-        fields = ('doctor', 'patient')
+        fields = ('doctor', 'patient', 'start')
 
 
 class ConsultationOrderSerializer(serializers.ModelSerializer):
