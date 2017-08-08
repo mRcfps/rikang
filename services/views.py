@@ -102,7 +102,7 @@ class FinishOrderView(APIView):
         order = Order.objects.get(order_no=request.data['order_no'])
         consult = Consultation.objects.get(id=request.data['order_no'])
 
-        if order.status != Order.PAID:
+        if order.status != Order.UNDERWAY:
             return Response({'error': "订单状态错误"}, status=status.HTTP_400_BAD_REQUEST)
 
         if order.owner != request.user.patient:
