@@ -99,8 +99,11 @@ class DoctorDetailView(generics.RetrieveAPIView):
 class DoctorInfoView(generics.RetrieveAPIView):
     """GET a doctor's information."""
 
-    queryset = Information.objects.all()
     serializer_class = InformationSerializer
+
+    def get_object(self):
+        doctor = Doctor.objects.get(id=self.kwargs['pk'])
+        return Information.objects.get(doctor=doctor)
 
 
 class DoctorFavView(APIView):
