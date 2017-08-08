@@ -71,8 +71,11 @@ class AcceptOrderView(APIView):
     permission_classes = (IsAuthenticated, IsDoctor)
 
     def post(self, request):
-        order = Order.objects.get(id=request.data['order_no'])
+        order = Order.objects.get(order_no=request.data['order_no'])
         consult = Consultation.objects.get(id=request.data['order_no'])
+
+        if order.status != Order.PAID:
+            return Response({'error': "错误的订单状态"}, status=status.HTTP_400_BAD_REQUEST)
 
         if consult.doctor == request.user.doctor:
             # Change order status
