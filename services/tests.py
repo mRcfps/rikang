@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
 
-from services.models import Order, Consultation, Comment
+from services.models import Order, Consultation, Comment, Summary
 from users.models import Doctor, Patient
 
 # Number of doctor-comments for test
@@ -165,3 +165,38 @@ class CommentTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['count'], TEST_COMMENT_NUM)
+
+
+class SummaryTests(APITestCase):
+
+    def setUp(self):
+        self.client = APIClient()
+
+    def test_create_new_summary(self):
+        """Ensure we can create new summaries from pingxx."""
+        url = reverse('services:webhooks')
+        data = {
+            "id": "evt_testtestz79mgOE0MCPN21CM",
+            "created": 1440407412,
+            "livemode": True,
+            "type": "summary.daily.available",
+            "data": {
+                "object": {
+                    "app_id": "app_urj1WLzvzfTK0OuL",
+                    "object": "app_daily_summary",
+                    "app_display_name": "测试应用",
+                    "created": 1440407412,
+                    "summary_from": 1440407412,
+                    "summary_to": 1440407412,
+                    "charges_amount": 3000,
+                    "charges_count": 300
+                }
+            },
+            "object": "event",
+            "request": "",
+            "pending_webhooks": 0
+        }
+        response = self.client.post(url, data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertNotEqual(Summary.objects.count(), 0)
