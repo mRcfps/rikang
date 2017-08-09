@@ -16,7 +16,7 @@ import pay
 
 from services import types, events
 from services.serializers import NewCommentSerializer
-from services.models import Order, Consultation, Summary, Comment
+from services.models import Order, Consultation, Summary, Comment, Membership
 from users.models import Patient, Doctor
 from users.permissions import IsPatient, IsDoctor, IsOwnerOrReadOnly
 
@@ -37,19 +37,29 @@ class NewOrderView(APIView):
 
     def post(self, request):
         try:
+            patient = request.user.patient
             if request.data['type'] == types.CONSULTATION:
-                patient = Patient.objects.get(id=request.user.patient.id)
+                # create new consultation order
                 doctor = get_object_or_404(Doctor, id=request.data['doctor'], active=True)
                 consult = Consultation.objects.create(patient=patient,
                                                       doctor=doctor,
                                                       id=uuid.uuid4().hex)
-                order = Order.objects.create(owner=request.user.patient,
+                if hasattr(patient, 'membership'):
+                    if patient.membership.expire > datetime.now():
+                        discount = settings.MEMBERSHIP_DISCOUNT
+                    else:
+                        patient.membership.delete()
+                        discount = 1
+                else:
+                    discount = 1
+                cost = Decimal(discount) * doctor.consult_price
+                order = Order.objects.create(owner=patient,
                                              provider=doctor,
                                              service_object=consult,
-                                             cost=doctor.consult_price)
-
+                                             cost=cost)
                 data = {
                     'order_no': order.order_no,
+                    'discount': discount,
                     'cost': order.cost,
                     'status': order.status,
                     'type': types.CONSULTATION,
@@ -57,10 +67,27 @@ class NewOrderView(APIView):
                     'patient': patient.id,
                     'created': order.created,
                 }
-
+                return Response(data, status=status.HTTP_201_CREATED)
+            elif request.data['type'] == types.MEMBERSHIP:
+                # create new membership order
+                mem = Membership.objects.create(patient=patient,
+                                                id=uuid.uuid4().hex,
+                                                name=request.data['name'],
+                                                id_card=request.data['id_card'])
+                order = Order.objects.create(owner=patient,
+                                             service_object=mem,
+                                             cost=settings.MEMBERSHIP_PRICE)
+                data = {
+                    'order_no': order.order_no,
+                    'cost': order.cost,
+                    'type': types.MEMBERSHIP,
+                    'patient': patient.id,
+                    'expire': mem.expire,
+                }
                 return Response(data, status=status.HTTP_201_CREATED)
             else:
-                return Response({'error': "不存在的服务类型"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({'error': "不存在的服务类型"},
+                                status=status.HTTP_400_BAD_REQUEST)
         except KeyError:
             return Response({'error': "所选择的服务类型缺失必要字段"},
                             status=status.HTTP_400_BAD_REQUEST)
@@ -165,11 +192,11 @@ class PayView(APIView):
         )
 
         if created:
-            consult = Consultation.objects.get(id=request.data['order_no'])
-            # push.send_push_to_user(
-            #     message="您有了新的在线咨询订单，请及时查看。",
-            #     user_id=consult.doctor.user.id
-            # )
+            # add charge_id to the order
+            order = Order.objects.get(order_no=response['order_no'])
+            order.charge_id = response['id']
+            order.save()
+
             return Response(response, status=status.HTTP_200_OK)
         else:
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
@@ -233,16 +260,28 @@ class WebhooksView(APIView):
 
     def post(self, request):
         event_obj = request.data['data']['object']
+
         if request.data['type'] == events.CHARGE_SUCCEEDED:
             order = Order.objects.get(order_no=event_obj['order_no'])
-            order.status = Order.PAID
-            order.save()
-            return Response(status=status.HTTP_200_OK)
+            if types.from_service_name[event_obj['subject']] == types.CONSULTATION:
+                order.status = Order.PAID
+                order.save()
+                return Response(status=status.HTTP_200_OK)
+            elif types.from_service_name[event_obj['subject']] == types.MEMBERSHIP:
+                mem = Membership.objects.get(id=event_obj['order_no'])
+                mem.expire = datetime.now() + timedelta(days=365)
+                mem.save()
+                return Response(status=status.HTTP_200_OK)
+            else:
+                # nonexistent charge subject
+                return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
         elif request.data['type'] == events.REFUND_SUCCEEDED:
             order = Order.objects.get(order_no=event_obj['order_no'])
             order.status = Order.REFUND
             order.save()
             return Response(status=status.HTTP_200_OK)
+
         elif request.data['type'].startswith('summary'):
             summary_from = datetime.fromtimestamp(event_obj['summary_from'])
             summary_to = datetime.fromtimestamp(event_obj['summary_to'])
@@ -254,6 +293,7 @@ class WebhooksView(APIView):
                 summary_to=summary_to.replace(second=0)
             )
             return Response(status=status.HTTP_200_OK)
+
         else:
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 

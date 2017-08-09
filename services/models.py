@@ -25,19 +25,30 @@ class Order(models.Model):
 
     order_no = models.UUIDField(editable=False,
                                 verbose_name='订单编号')
+    charge_id = models.CharField(max_length=30,
+                                 null=True,
+                                 blank=True,
+                                 verbose_name='收款编号')
     owner = models.ForeignKey('users.patient', related_name='orders', verbose_name='顾客')
-    provider = models.ForeignKey('users.doctor', related_name='orders', verbose_name='服务提供者')
-    cost = models.DecimalField(max_digits=5, decimal_places=2, editable=False, verbose_name='费用')
+    provider = models.ForeignKey('users.doctor',
+                                 related_name='orders',
+                                 null=True,
+                                 blank=True,
+                                 verbose_name='服务提供者')
+    cost = models.DecimalField(max_digits=10,
+                               decimal_places=2,
+                               editable=False,
+                               verbose_name='费用')
     status = models.CharField(choices=STATUS_CHOICES,
                               max_length=1,
                               default=UNPAID,
                               editable=False,
                               verbose_name='订单状态')
     created = models.DateTimeField(auto_now_add=True, editable=False, verbose_name='创建时间')
-    limit = models.Q(app_label='services', model='consultation')
+    limit = models.Q(app_label='services', model='consultation') | \
+            models.Q(app_label='services', model='membership')
     service_type = models.ForeignKey(ContentType,
                                      limit_choices_to=limit,
-                                     on_delete=models.CASCADE,
                                      verbose_name='服务类型')
     service_object = GenericForeignKey('service_type', 'order_no')
 
@@ -66,6 +77,28 @@ class Consultation(models.Model):
         ordering = ('-created',)
         verbose_name = '在线咨询'
         verbose_name_plural = verbose_name
+
+
+class Membership(models.Model):
+
+    id = models.UUIDField(primary_key=True, editable=False, verbose_name='会员编号')
+    patient = models.OneToOneField('users.patient', verbose_name='患者')
+    expire = models.DateTimeField(null=True, blank=True, verbose_name='到期时间')
+    name = models.CharField(max_length=10,
+                            null=True,
+                            blank=True,
+                            verbose_name='会员姓名')
+    id_card = models.CharField(max_length=20,
+                               null=True,
+                               blank=True,
+                               verbose_name='身份证号')
+
+    class Meta:
+        verbose_name = '会员'
+        verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return self.name
 
 
 class Comment(models.Model):

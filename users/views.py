@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.models import User
 from django.contrib.admin.views.decorators import staff_member_required
@@ -27,8 +29,10 @@ from users.permissions import (IsDoctor,
 from users.sms import send_sms_code
 from qa.serializers import QuestionSerializer, StarredQuestionSerializer
 from home.serializers import FavoritePostSerializer, FavoriteDoctorSerializer
+from services.models import Membership
 from services.serializers import (ConsultationSerializer,
-                                  ConsultationOrderSerializer)
+                                  ConsultationOrderSerializer,
+                                  MembershipSerializer)
 
 
 class UserLoginView(APIView):
@@ -231,9 +235,21 @@ class PatientServicesView(generics.ListAPIView):
         return patient.orders.all()
 
 
-# class NewCIDView(generics.CreateAPIView):
+class PatientMembershipView(generics.RetrieveAPIView):
 
-#     serializer_class = CIDSerializer
+    serializer_class = MembershipSerializer
+
+    def get_object(self):
+        patient = Patient.objects.get(user=self.request.user)
+        if hasattr(patient, 'membership'):
+            if patient.membership.expire < datetime.now():
+                # this membership has expired
+                patient.membership.delete()
+                return None
+            else:
+                return patient.membership
+        else:
+            return None
 
 
 @staff_member_required

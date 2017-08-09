@@ -1,9 +1,8 @@
 import pingpp
 import keys
 
-from services.types import SERVICE_NAME, SERVICE_DESCRIPTION
+from services.types import service_name, service_description
 
-# app_id 获取方式：登录 [Dashboard](https://dashboard.pingxx.com)->点击你创建的应用->应用首页->应用 ID(App ID)
 APP_ID = 'app_mjv1K0SWTGWTvn54'
 
 # 设置 API Key
@@ -20,8 +19,8 @@ def create_charge(service_type, cost, order_no, channel, client_ip):
     """
     try:
         response = pingpp.Charge.create(
-            subject=SERVICE_NAME[service_type],
-            body=SERVICE_DESCRIPTION[service_type],
+            subject=service_name[service_type],
+            body=service_description[service_type],
             amount=float(cost)*100,
             order_no=order_no,
             currency='cny',

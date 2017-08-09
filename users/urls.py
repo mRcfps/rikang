@@ -122,6 +122,13 @@ urlpatterns = [
         name='patient-services'
     ),
 
+    # `GET` /users/patient/membership/
+    url(
+        r'^patient/membership/$',
+        views.PatientMembershipView.as_view(),
+        name='patient-membership'
+    ),
+
     url(
         r'^verify-doctor/(?P<doctor_id>\d+)/$',
         views.admin_verify_doctor,

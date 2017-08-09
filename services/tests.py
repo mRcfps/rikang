@@ -3,11 +3,12 @@ from datetime import timedelta, datetime
 
 from django.urls import reverse
 from django.contrib.auth.models import User
+from django.conf import settings
 
 from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
 
-from services.models import Order, Consultation, Comment, Summary
+from services.models import Order, Consultation, Comment, Summary, Membership
 from users.models import Doctor, Patient
 
 # Number of doctor-comments for test
@@ -15,8 +16,8 @@ from users.models import Doctor, Patient
 TEST_COMMENT_NUM = 50
 
 
-class OrderTests(APITestCase):
-    """Test suite for the whole life cycle of Order model."""
+class ConsultationOrderTests(APITestCase):
+    """Test suite for the whole life cycle of a consultation order."""
 
     def setUp(self):
         # initialize a doctor
@@ -55,7 +56,7 @@ class OrderTests(APITestCase):
     def test_create_new_order(self):
         """Ensure we can create a new consult order."""
         url = reverse('services:new-order')
-        data = {'type': 'C', 'patient': self.patient.id, 'doctor': self.doctor.id}
+        data = {'type': 'C', 'doctor': self.doctor.id}
         self.client.force_authenticate(user=self.patient_user)
         response = self.client.post(url, data)
 
@@ -66,7 +67,7 @@ class OrderTests(APITestCase):
     def test_block_order_with_nonexistent_service_type(self):
         """Ensure we can block orders with unknown types."""
         url = reverse('services:new-order')
-        bad_data = {'type': 'A', 'patient': self.patient.id, 'doctor': self.doctor.id}
+        bad_data = {'type': 'A', 'doctor': self.doctor.id}
         self.client.force_authenticate(user=self.patient_user)
         response = self.client.post(url, bad_data)
 
@@ -75,14 +76,14 @@ class OrderTests(APITestCase):
     def test_block_incomplete_order(self):
         """Ensure we can block orders with some fields missing."""
         url = reverse('services:new-order')
-        bad_data = {'type': 'C', 'patient': self.patient.id}
+        bad_data = {'type': 'C'}
         self.client.force_authenticate(user=self.patient_user)
         response = self.client.post(url, bad_data)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_pay_order(self):
-        """Ensure we can pay an order."""
+        """Ensure we can go through pay->confirm->refund cycle."""
         url = reverse('services:pay')
         data = {
             'order_no': self.order.order_no,
@@ -95,6 +96,43 @@ class OrderTests(APITestCase):
         response = self.client.post(url, data)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # check if order's status is not changed and has its charge_id
+        test_order = Order.objects.get(order_no=self.order.order_no)
+        self.assertEqual(test_order.status, Order.UNPAID)
+        self.assertEqual(hasattr(test_order, 'charge_id'), True)
+
+        # Post charge-succeeded event to webhooks
+        url = reverse('services:webhooks')
+        data = {
+            "id": "evt_ugB6x3K43D16wXCcqbplWAJo",
+            "created": 1427555101,
+            "type": "charge.succeeded",
+            "data": {
+                "object": {
+                    "id": "ch_Xsr7u35O3m1Gw4ed2ODmi4Lw",
+                    "object": "charge",
+                    "created": 1427555076,
+                    "app": "app_1Gqj58ynP0mHeX1q",
+                    "channel": "upacp",
+                    "order_no": self.order.order_no,
+                    "client_ip": "127.0.0.1",
+                    "amount": 100,
+                    "amount_settle": 100,
+                    "currency": "cny",
+                    "subject": "在线咨询",
+                    "body": "Your Body",
+                }
+            },
+        }
+        self.client.force_authenticate()
+        response = self.client.post(url, data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # check if order's status is switched to PAID
+        test_order = Order.objects.get(order_no=self.order.order_no)
+        self.assertEqual(test_order.status, Order.PAID)
 
     def test_accept_order(self):
         """Ensure a doctor can accept a paid order."""
@@ -140,8 +178,8 @@ class OrderTests(APITestCase):
         self.order.status = Order.UNDERWAY
         self.order.save()
 
-        # rewind a day earlier to pass time check
-        self.consult.start -= timedelta(days=2)
+        # rewind a day back to pass time check
+        self.consult.start -= timedelta(days=1)
         self.consult.save()
 
         url = reverse('services:finish-order')
@@ -170,6 +208,160 @@ class OrderTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertNotEqual(Comment.objects.count(), 0)
+
+    def test_patient_get_services(self):
+        """Ensure a patient can get all his/her consult orders."""
+        url = reverse('users:patient-services')
+        self.client.force_authenticate(user=self.patient_user)
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+
+class MembershipOrderTests(APITestCase):
+    """Test suite for the whole life cycle of a membership order."""
+
+    def setUp(self):
+        # initialize a doctor
+        self.doctor_user = User.objects.create_user(username='doctor', password='test')
+        self.doctor = Doctor.objects.create(
+            user=self.doctor_user,
+            name='test',
+            department='AND',
+            hospital='test',
+            start='2000-01-01',
+            consult_price=50.00,
+            title='A',
+            active=True
+        )
+
+        # initialize a patient
+        self.patient_user = User.objects.create_user(username='patient', password='test')
+        self.patient = Patient.objects.create(user=self.patient_user)
+
+
+
+        # intialize APIClient
+        self.client = APIClient()
+
+        self.mem = Membership.objects.create(patient=self.patient,
+                                             id=uuid.uuid4().hex)
+        self.order = Order.objects.create(owner=self.patient,
+                                          service_object=self.mem,
+                                          cost=settings.MEMBERSHIP_PRICE)
+
+    def test_create_new_order(self):
+        """Ensure we can create new mem order via api."""
+        new_pu = User.objects.create_user(username='new', password='test')
+        p = Patient.objects.create(user=new_pu)
+        url = reverse('services:new-order')
+        data = {'type': 'M', 'name': 'test', 'id_card': 'test'}
+        self.client.force_authenticate(user=new_pu)
+        response = self.client.post(url, data)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Membership.objects.count(), 2)
+        self.assertEqual(Order.objects.count(), 2)
+
+    def test_cancel_order(self):
+        """Ensure we can cancel a mem order."""
+        url = reverse('services:cancel')
+        data = {'order_no': self.order.order_no}
+        self.client.force_authenticate(user=self.patient_user)
+        response = self.client.post(url, data)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(Membership.objects.count(), 0)
+        self.assertEqual(Order.objects.count(), 0)
+
+    def test_pay_order(self):
+        """Ensure we can pay a mem order."""
+        url = reverse('services:pay')
+        data = {
+            'order_no': self.order.order_no,
+            'type': 'M',
+            'cost': self.order.cost,
+            'channel': 'alipay',
+        }
+        self.client.force_authenticate(user=self.patient_user)
+        response = self.client.post(url, data)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Check if the order's status has not changed and has its charge_id
+        test_order = Order.objects.get(order_no=self.order.order_no)
+        self.assertEqual(test_order.status, Order.UNPAID)
+        self.assertEqual(hasattr(test_order, 'charge_id'), True)
+
+    def test_webhooks_confirm_pay(self):
+        """Ensure a webhooks event can activate a membership order."""
+
+        # check if the unpaid membership has no expire time
+        self.assertEqual(hasattr(self.mem.refresh_from_db(), 'expire'), False)
+
+        url = reverse('services:webhooks')
+        data = {
+            "id": "evt_ugB6x3K43D16wXCcqbplWAJo",
+            "created": 1427555101,
+            "type": "charge.succeeded",
+            "data": {
+                "object": {
+                    "id": "ch_Xsr7u35O3m1Gw4ed2ODmi4Lw",
+                    "object": "charge",
+                    "created": 1427555076,
+                    "app": "app_1Gqj58ynP0mHeX1q",
+                    "channel": "upacp",
+                    "order_no": self.order.order_no,
+                    "client_ip": "127.0.0.1",
+                    "amount": 100,
+                    "amount_settle": 100,
+                    "currency": "cny",
+                    "subject": "会员",
+                    "body": "Your Body",
+                }
+            },
+        }
+        self.client.force_authenticate()
+        response = self.client.post(url, data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # check if the membership has its valid expire time
+        test_mem = Membership.objects.get(id=self.order.order_no)
+        self.assertEqual(hasattr(test_mem, 'expire'), True)
+
+        # check if the user can see the membership
+        url = reverse('users:patient-membership')
+        self.client.force_authenticate(user=self.patient_user)
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertNotEqual(response.data['expire'], None)
+
+        # check if this member can create order with discount
+        url = reverse('services:new-order')
+        data = {
+            'type': 'C',
+            'doctor': self.doctor.id,
+        }
+        test_patient = Patient.objects.get(user=self.patient_user)
+        self.assertEqual(hasattr(test_patient, 'membership'), True)
+        self.assertNotEqual(test_patient.membership.expire, None)
+        response = self.client.post(url, data)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertNotEqual(response.data['discount'], 1)
+
+    def test_non_vip_has_no_valid_membership(self):
+        """Ensure a non-vip user cannot see membership."""
+        new_user = User.objects.create_user(username='test2', password='test')
+        new_patient = Patient.objects.create(user=new_user)
+        url = reverse('users:patient-membership')
+        self.client.force_authenticate(user=new_user)
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['expire'], None)
 
 
 class CommentTests(APITestCase):
