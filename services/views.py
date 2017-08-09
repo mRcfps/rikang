@@ -135,8 +135,8 @@ class FinishOrderView(APIView):
         if order.owner != request.user.patient:
             return Response({'error': "您无权操作此订单"}, status=status.HTTP_403_FORBIDDEN)
 
-        if datetime.now() - consult.start < timedelta(days=1):
-            return Response({'error': "尚未到结束订单的时间"}, status=status.HTTP_400_BAD_REQUEST)
+        # if datetime.now() - consult.start < timedelta(days=1):
+        #     return Response({'error': "尚未到结束订单的时间"}, status=status.HTTP_400_BAD_REQUEST)
 
         # Change order status
         order.status = Order.FINISHED
@@ -232,9 +232,9 @@ class RefundView(APIView):
                             status=status.HTTP_400_BAD_REQUEST)
 
         # Check if this order has been unaccepted for over 2 hours
-        if datetime.now() - order.created < timedelta(hours=2):
-            return Response({'error': "尚未到可退款时间"},
-                            status=status.HTTP_400_BAD_REQUEST)
+        # if datetime.now() - order.created < timedelta(hours=2):
+        #     return Response({'error': "尚未到可退款时间"},
+        #                     status=status.HTTP_400_BAD_REQUEST)
 
         response, success = pay.refund(request.data['charge_id'])
 
