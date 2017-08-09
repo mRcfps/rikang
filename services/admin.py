@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from services.models import Order, Consultation, Summary, Comment
+from services.models import Order, Consultation, Summary, Comment, Membership
 
 
 class OrderAdmin(admin.ModelAdmin):
@@ -15,6 +15,13 @@ class ConsultationAdmin(admin.ModelAdmin):
     list_display = ('doctor', 'patient', 'created')
 
 
+class MembershipAdmin(admin.ModelAdmin):
+
+    list_display = ('patient', 'name', 'expire', 'id_card')
+    list_filter = ('expire',)
+    search_fields = ('patient', 'name', 'id_card')
+
+
 class SummaryAdmin(admin.ModelAdmin):
 
     list_display = ('summary_type', 'charges_amount', 'charges_count', 'created')
@@ -26,5 +33,6 @@ class CommentAdmin(admin.ModelAdmin):
 
 admin.site.register(Order, OrderAdmin)
 admin.site.register(Consultation, ConsultationAdmin)
+admin.site.register(Membership, MembershipAdmin)
 admin.site.register(Summary, SummaryAdmin)
 admin.site.register(Comment, CommentAdmin)
