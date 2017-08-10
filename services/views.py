@@ -209,7 +209,7 @@ class CancelView(APIView):
     def post(self, request):
         order = get_object_or_404(Order, order_no=request.data['order_no'])
 
-        if order.status != Order.UNPAID:
+        if request.data['type'] == 'C' and order.status != Order.UNPAID:
             return Response({'error': "无法取消订单"},
                             status=status.HTTP_400_BAD_REQUEST)
 
