@@ -239,6 +239,9 @@ class RefundView(APIView):
         response, success = pay.refund(request.data['charge_id'])
 
         if success:
+            order = Order.objects.get(order_no=request.data['order_no'])
+            order.status = Order.REFUND
+            order.save()
             return Response(response)
         else:
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
