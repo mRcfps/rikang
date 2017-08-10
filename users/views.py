@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.models import User
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.hashers import check_password
+from django.contrib.contenttypes.models import ContentType
 
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
@@ -232,7 +233,9 @@ class PatientServicesView(generics.ListAPIView):
 
     def get_queryset(self):
         patient = Patient.objects.get(user=self.request.user)
-        return patient.orders.all()
+        consult_type = ContentType.objects.get(app_label='services',
+                                               model='consultation')
+        return patient.orders.filter(service_type=consult_type)
 
 
 class PatientMembershipView(generics.RetrieveAPIView):
@@ -242,7 +245,7 @@ class PatientMembershipView(generics.RetrieveAPIView):
     def get_object(self):
         patient = Patient.objects.get(user=self.request.user)
         if hasattr(patient, 'membership'):
-            if patient.membership.expire < datetime.now():
+            if patient.membership.expire is None or patient.membership.expire < datetime.now():
                 # this membership has expired
                 patient.membership.delete()
                 return None
