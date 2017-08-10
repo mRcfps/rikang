@@ -239,15 +239,6 @@ class RefundView(APIView):
         response, success = pay.refund(request.data['charge_id'])
 
         if success:
-            order.status = Order.REFUND
-            order.save()
-
-            doctor = order.service.doctor
-            patient = order.service.patient
-            # push.send_push_to_user(
-            #     message="{}医生超过2小时未回复您的咨询请求，咨询费用已全部退还。".format(doctor.name),
-            #     user_id=patient.user.id
-            # )
             return Response(response)
         else:
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
