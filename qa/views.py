@@ -129,24 +129,22 @@ class QuestionUnstarView(APIView):
         return Response({'id': int(pk), 'unstarred': True})
 
 
-class PickAnswerView(APIView):
+class SolveQuestionView(APIView):
+
+    permission_classes = (IsAuthenticated, IsDoctor)
 
     def post(self, request, pk):
         question = Question.objects.get(id=pk)
-        if question.owner == request.user.patient:
-            question.solved = True
-            question.save()
-            answer = Answer.objects.get(id=request.data['pick'])
-            answer.picked = True
-            answer.save()
-            # push.send_push_to_user(
-            #     message='您关于“{}”的回答被提问者采纳了。'.format(question.title),
-            #     user_id=answer.owner.user.id
-            # )
-            return Response({'picked': True})
-        else:
-            # this request does not come from owner of this question
-            return Response({'error': "无权执行此操作"}, status=status.HTTP_403_UNAUTHORIZED)
+
+        if question.solved:
+            return Response({'error': "问题已被解决"},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        question.solved = True
+        question.solver = request.user.doctor
+        question.save()
+
+        return Response({'success': True})
 
 
 class AnswersListView(generics.ListAPIView):
@@ -168,12 +166,6 @@ class NewAnswerView(generics.CreateAPIView):
         answer = serializer.save(question=question, owner=doctor)
         doctor.patient_num += 1
         doctor.save()
-
-        question = answer.question
-        # push.send_push_to_user(
-        #     message='您的问题“{}”有了新的回答。'.format(question.title),
-        #     user_id=question.owner.user.id
-        # )
 
 
 class AnswersDetailView(generics.RetrieveUpdateAPIView):
